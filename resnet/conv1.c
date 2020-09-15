@@ -1,34 +1,33 @@
 #include <math.h>
-#include <stdlib.h> 
-
+#include <stdlib.h>
 #define N_FILTERS 64
 #define STRIDE 2
 #define WIDTH 224
 #define HEIGHT 224
 
-use namespace std;
 
-static float filters[NUM_FILTERS*7*7];
+static float filters[N_FILTERS*7*7];
 
 void init_weights_7x7()
 {
     for(int i = 0; i < N_FILTERS*7*7; i++)
     {
-        filters[i] = rand()/RAND_MAX;
+        // filters[i] = rand()/RAND_MAX;
+        filters[i] = 1;
     }
 }
 
 void conv1_layer(float data[], float output[])
 {
-    int filter;
+    int filter, id = 0;
     float conv;
     unsigned char window[7*7];
     
     for(filter = 0; filter < N_FILTERS; filter++)
     {
-        for(int i = 0; i < HEIGHT - 6; i = i + STRIDE)
+        for(int i = 0; i < HEIGHT; i = i + STRIDE)
         {
-            for(int j = 0; j < WIDTH - 6; j = j + STRIDE)
+            for(int j = 0; j < WIDTH; j = j + STRIDE)
             {
                 window[0] = data[(i+0)*WIDTH + j+0];
                 window[1] = data[(i+0)*WIDTH + j+1];
@@ -93,7 +92,7 @@ void conv1_layer(float data[], float output[])
                     conv = conv + (window[k] * filters[k + 7*7*filter]);
                 }
 
-                output[filter*(WIDTH-6)*(HEIGHT-6) + (i*(WIDTH-6) + j)] = conv;
+                output[filter*(WIDTH)*(HEIGHT) + (i*(WIDTH) + j)] = conv;
             }
         }
     }
@@ -105,4 +104,26 @@ void conv1_layer(float data[], float output[])
         output[id] = 1 / (1 + expf(-1*output[id]));
     }
 */
+}
+
+int main(int argc, const char * argv[])
+{
+    FILE *picture;
+    int c;
+    int n = 0;
+
+    picture = fopen("/home/antonio/Imagens/gray/g/Grayscale.jpg", "rb");
+    if (picture != NULL)
+    {
+        do {
+            c = fgetc(picture);
+            if( feof(picture) ) break;
+            printf("%c", c);
+            n++;
+        } while(1);
+
+        printf("%i", n);
+    }
+
+    return 0;
 }
