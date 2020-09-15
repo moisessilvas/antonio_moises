@@ -1,5 +1,5 @@
 #include <math.h>
-#include <stdlib.h>
+#include <stdlib.h> 
 
 #define N_FILTERS 64
 #define STRIDE 2
