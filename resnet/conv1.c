@@ -1,6 +1,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_opengl.h>
 
 #define N_FILTERS 64
 #define STRIDE 2
@@ -110,6 +113,7 @@ void conv1_layer(float data[], float output[])
 
 int main(int argc, const char * argv[])
 {
+    /*
     FILE *picture;
     int c;
     int n = 0;
@@ -126,6 +130,13 @@ int main(int argc, const char * argv[])
 
         printf("%i", n);
     }
+    */
+
+    SDL_Surface * hello = NULL;
+
+    if(IMG_Init(IMG_INIT_JPG) == 0) printf("Erro ao abrir inicializador\n");
+    else if((hello = IMG_Load("/home/antonio/Imagens/gray/g/Grayscale.jpg")) == NULL) printf("Erro ao abrir imagem\n");
+    else printf("Tudo suave\n");
 
     return 0;
 }
