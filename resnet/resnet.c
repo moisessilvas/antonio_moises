@@ -3,23 +3,86 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define N_FILTERS 64
-#define STRIDE 1
-#define WIDTH 224
-#define HEIGHT 224
-#define OUT_DIM 112
+#define N_FILTERS_64 64
+#define N_FILTERS_128 128
+#define N_FILTERS_256 256
+#define N_FILTERS_512 512
 
+#define DIM_0 224
+#define DIM_1 112
+#define DIM_2 56
+#define DIM_3 28
+#define DIM_4 14
+#define DIM_5 7
 
-static float filters[N_FILTERS*7*7];
-static int image[(WIDTH+6)*(HEIGHT+6)];
-static float output[4*OUT_DIM*OUT_DIM*64];
+static int image[(DIM_0+6)*(DIM_0+6)];
+static float output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
+static float output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+
+static float weights_conv1[N_FILTERS_64*7*7];
+
+void zero_padding(FILE* picture)
+{
+    int c;
+    int n = 0;
+    int line = 0;
+    int count = 0;
+    bool isPadding = 1;
+
+    if (picture != NULL)
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            for(int j = 0; j < 230; j++)
+            {
+                if(i < 3) 
+                {
+                    image[(i+1)*230 + j] = 0;
+                    count++;
+                }
+                else image[(i+224)*230 + j] = 0;
+            }
+        }
+
+        do {
+            c = fgetc(picture);
+            
+            if( feof(picture) ) break;
+            else if(c == '\n' && n < 3) n++;
+            else if(n >= 3)
+            {
+                while(isPadding)
+                {
+                    image[count] = 0;
+                    count++;
+
+                    if(line == 0 || line == 1 || line == 227 || line == 228) line++;
+                    else if(line == 229) line = 0;
+                    else if(line == 2) 
+                    {
+                        line++;
+                        isPadding = 0;
+                    }
+                }
+                
+                image[count] = c;
+                count++;
+
+                if(line == 226) isPadding = 1;
+                line++;
+            }
+        } while(1);
+
+        image[52208] = 0;
+    }
+}
 
 void init_weights_7x7()
 {
-    for(int i = 0; i < N_FILTERS*7*7; i++)
+    for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        filters[i] = 1;
+        weights_conv1[i] = 1;
     }
 }
 
@@ -29,11 +92,11 @@ void conv1_layer()
     float conv;
     unsigned char window[7*7];
     
-    for(filter = 0; filter < N_FILTERS; filter++)
+    for(filter = 0; filter < N_FILTERS_64; filter++)
     {
-        for(int i = 0; i < HEIGHT; i = i + STRIDE)
+        for(int i = 0; i < DIM_0); i = i + 2)
         {
-            for(int j = 0; j < WIDTH; j = j + STRIDE)
+            for(int j = 0; j < DIM_0; j = j + 2)
             {
                 window[0] = image[(i+0)*(WIDTH+6) + j+0];
                 window[1] = image[(i+0)*(WIDTH+6) + j+1];
@@ -98,7 +161,7 @@ void conv1_layer()
                     conv = conv + (window[k] * filters[k + 7*7*filter]);
                 }
 
-                output[filter*OUT_DIM*OUT_DIM*4 + ((i/1)*OUT_DIM*2 + (j/1))] = conv;
+                output1[filter*DIM_1*DIM_1 + ((i/1)*DIM_1 + (j/1))] = conv;
             }
         }
     }
@@ -110,4 +173,29 @@ void conv1_layer()
         output[id] = 1 / (1 + expf(-1*output[id]));
     }
 */
+}
+
+int main(int argc, const char * argv[])
+{
+    FILE *picture;
+    
+    picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
+
+    zero_padding(picture);
+    init_weights_7x7();
+    conv1_layer();
+
+    /*for(int filter = 0; filter < N_FILTERS; filter++)
+    {  
+        for(int linha = 0; linha < OUT_DIM*2; linha++)
+        {
+            for(int coluna = 0; coluna < OUT_DIM*2; coluna++)
+            {
+                printf("%f ", output[filter*OUT_DIM*OUT_DIM*4 + linha*OUT_DIM*2 + coluna]);
+            }
+            printf("\n");
+        }
+    }*/
+
+    return 0;
 }
