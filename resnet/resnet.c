@@ -175,6 +175,362 @@ void conv1_layer()
 */
 }
 
+void conv2_layer()
+{
+    int filter, id = 0;
+    float conv;
+    unsigned char window[7*7];
+    
+    for(filter = 0; filter < N_FILTERS_64; filter++)
+    {
+        for(int i = 0; i < DIM_1); i = i + 2)
+        {
+            for(int j = 0; j < DIM_1; j = j + 2)
+            {
+                window[0] = image[(i+0)*(WIDTH+6) + j+0];
+                window[1] = image[(i+0)*(WIDTH+6) + j+1];
+                window[2] = image[(i+0)*(WIDTH+6) + j+2];
+                window[3] = image[(i+0)*(WIDTH+6) + j+3];
+                window[4] = image[(i+0)*(WIDTH+6) + j+4];
+                window[5] = image[(i+0)*(WIDTH+6) + j+5];
+                window[6] = image[(i+0)*(WIDTH+6) + j+6];
+                
+                window[7] = image[(i+1)*(WIDTH+6) + j+0];
+                window[8] = image[(i+1)*(WIDTH+6) + j+1];
+                window[9] = image[(i+1)*(WIDTH+6) + j+2];
+                window[10] = image[(i+1)*(WIDTH+6) + j+3];
+                window[11] = image[(i+1)*(WIDTH+6) + j+4];
+                window[12] = image[(i+1)*(WIDTH+6) + j+5];
+                window[13] = image[(i+1)*(WIDTH+6) + j+6];
+                
+                window[14] = image[(i+2)*(WIDTH+6) + j+0];
+                window[15] = image[(i+2)*(WIDTH+6) + j+1];
+                window[16] = image[(i+2)*(WIDTH+6) + j+2];
+                window[17] = image[(i+2)*(WIDTH+6) + j+3];
+                window[18] = image[(i+2)*(WIDTH+6) + j+4];
+                window[19] = image[(i+2)*(WIDTH+6) + j+5];
+                window[20] = image[(i+2)*(WIDTH+6) + j+6];
+
+                window[21] = image[(i+3)*(WIDTH+6) + j+0];
+                window[22] = image[(i+3)*(WIDTH+6) + j+1];
+                window[23] = image[(i+3)*(WIDTH+6) + j+2];
+                window[24] = image[(i+3)*(WIDTH+6) + j+3];
+                window[25] = image[(i+3)*(WIDTH+6) + j+4];
+                window[26] = image[(i+3)*(WIDTH+6) + j+5];
+                window[27] = image[(i+3)*(WIDTH+6) + j+6];
+
+                window[28] = image[(i+4)*(WIDTH+6) + j+0];
+                window[29] = image[(i+4)*(WIDTH+6) + j+1];
+                window[30] = image[(i+4)*(WIDTH+6) + j+2];
+                window[31] = image[(i+4)*(WIDTH+6) + j+3];
+                window[32] = image[(i+4)*(WIDTH+6) + j+4];
+                window[33] = image[(i+4)*(WIDTH+6) + j+5];
+                window[34] = image[(i+4)*(WIDTH+6) + j+6];
+
+                window[35] = image[(i+5)*(WIDTH+6) + j+0];
+                window[36] = image[(i+5)*(WIDTH+6) + j+1];
+                window[37] = image[(i+5)*(WIDTH+6) + j+2];
+                window[38] = image[(i+5)*(WIDTH+6) + j+3];
+                window[39] = image[(i+5)*(WIDTH+6) + j+4];
+                window[40] = image[(i+5)*(WIDTH+6) + j+5];
+                window[41] = image[(i+5)*(WIDTH+6) + j+6];
+
+                window[42] = image[(i+6)*(WIDTH+6) + j+0];
+                window[43] = image[(i+6)*(WIDTH+6) + j+1];
+                window[44] = image[(i+6)*(WIDTH+6) + j+2];
+                window[45] = image[(i+6)*(WIDTH+6) + j+3];
+                window[46] = image[(i+6)*(WIDTH+6) + j+4];
+                window[47] = image[(i+6)*(WIDTH+6) + j+5];
+                window[48] = image[(i+6)*(WIDTH+6) + j+6];
+
+                conv = 0;
+
+                for(int k = 0; k < 7*7; k++)
+                {
+                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                }
+
+                output2[filter*DIM_2*DIM_2 + ((i/1)*DIM_2 + (j/1))] = conv;
+            }
+        }
+    }
+/*
+    filter++;
+
+    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    {
+        output[id] = 1 / (1 + expf(-1*output[id]));
+    }
+*/
+}
+
+void conv3_layer()
+{
+    int filter, id = 0;
+    float conv;
+    unsigned char window[7*7];
+    
+    for(filter = 0; filter < N_FILTERS_128; filter++)
+    {
+        for(int i = 0; i < DIM_2); i = i + 2)
+        {
+            for(int j = 0; j < DIM_2; j = j + 2)
+            {
+                window[0] = image[(i+0)*(WIDTH+6) + j+0];
+                window[1] = image[(i+0)*(WIDTH+6) + j+1];
+                window[2] = image[(i+0)*(WIDTH+6) + j+2];
+                window[3] = image[(i+0)*(WIDTH+6) + j+3];
+                window[4] = image[(i+0)*(WIDTH+6) + j+4];
+                window[5] = image[(i+0)*(WIDTH+6) + j+5];
+                window[6] = image[(i+0)*(WIDTH+6) + j+6];
+                
+                window[7] = image[(i+1)*(WIDTH+6) + j+0];
+                window[8] = image[(i+1)*(WIDTH+6) + j+1];
+                window[9] = image[(i+1)*(WIDTH+6) + j+2];
+                window[10] = image[(i+1)*(WIDTH+6) + j+3];
+                window[11] = image[(i+1)*(WIDTH+6) + j+4];
+                window[12] = image[(i+1)*(WIDTH+6) + j+5];
+                window[13] = image[(i+1)*(WIDTH+6) + j+6];
+                
+                window[14] = image[(i+2)*(WIDTH+6) + j+0];
+                window[15] = image[(i+2)*(WIDTH+6) + j+1];
+                window[16] = image[(i+2)*(WIDTH+6) + j+2];
+                window[17] = image[(i+2)*(WIDTH+6) + j+3];
+                window[18] = image[(i+2)*(WIDTH+6) + j+4];
+                window[19] = image[(i+2)*(WIDTH+6) + j+5];
+                window[20] = image[(i+2)*(WIDTH+6) + j+6];
+
+                window[21] = image[(i+3)*(WIDTH+6) + j+0];
+                window[22] = image[(i+3)*(WIDTH+6) + j+1];
+                window[23] = image[(i+3)*(WIDTH+6) + j+2];
+                window[24] = image[(i+3)*(WIDTH+6) + j+3];
+                window[25] = image[(i+3)*(WIDTH+6) + j+4];
+                window[26] = image[(i+3)*(WIDTH+6) + j+5];
+                window[27] = image[(i+3)*(WIDTH+6) + j+6];
+
+                window[28] = image[(i+4)*(WIDTH+6) + j+0];
+                window[29] = image[(i+4)*(WIDTH+6) + j+1];
+                window[30] = image[(i+4)*(WIDTH+6) + j+2];
+                window[31] = image[(i+4)*(WIDTH+6) + j+3];
+                window[32] = image[(i+4)*(WIDTH+6) + j+4];
+                window[33] = image[(i+4)*(WIDTH+6) + j+5];
+                window[34] = image[(i+4)*(WIDTH+6) + j+6];
+
+                window[35] = image[(i+5)*(WIDTH+6) + j+0];
+                window[36] = image[(i+5)*(WIDTH+6) + j+1];
+                window[37] = image[(i+5)*(WIDTH+6) + j+2];
+                window[38] = image[(i+5)*(WIDTH+6) + j+3];
+                window[39] = image[(i+5)*(WIDTH+6) + j+4];
+                window[40] = image[(i+5)*(WIDTH+6) + j+5];
+                window[41] = image[(i+5)*(WIDTH+6) + j+6];
+
+                window[42] = image[(i+6)*(WIDTH+6) + j+0];
+                window[43] = image[(i+6)*(WIDTH+6) + j+1];
+                window[44] = image[(i+6)*(WIDTH+6) + j+2];
+                window[45] = image[(i+6)*(WIDTH+6) + j+3];
+                window[46] = image[(i+6)*(WIDTH+6) + j+4];
+                window[47] = image[(i+6)*(WIDTH+6) + j+5];
+                window[48] = image[(i+6)*(WIDTH+6) + j+6];
+
+                conv = 0;
+
+                for(int k = 0; k < 7*7; k++)
+                {
+                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                }
+
+                output3[filter*DIM_3*DIM_3 + ((i/1)*DIM_3 + (j/1))] = conv;
+            }
+        }
+    }
+/*
+    filter++;
+
+    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    {
+        output[id] = 1 / (1 + expf(-1*output[id]));
+    }
+*/
+}
+
+void conv4_layer()
+{
+    int filter, id = 0;
+    float conv;
+    unsigned char window[7*7];
+    
+    for(filter = 0; filter < N_FILTERS_256; filter++)
+    {
+        for(int i = 0; i < DIM_3); i = i + 2)
+        {
+            for(int j = 0; j < DIM_3; j = j + 2)
+            {
+                window[0] = image[(i+0)*(WIDTH+6) + j+0];
+                window[1] = image[(i+0)*(WIDTH+6) + j+1];
+                window[2] = image[(i+0)*(WIDTH+6) + j+2];
+                window[3] = image[(i+0)*(WIDTH+6) + j+3];
+                window[4] = image[(i+0)*(WIDTH+6) + j+4];
+                window[5] = image[(i+0)*(WIDTH+6) + j+5];
+                window[6] = image[(i+0)*(WIDTH+6) + j+6];
+                
+                window[7] = image[(i+1)*(WIDTH+6) + j+0];
+                window[8] = image[(i+1)*(WIDTH+6) + j+1];
+                window[9] = image[(i+1)*(WIDTH+6) + j+2];
+                window[10] = image[(i+1)*(WIDTH+6) + j+3];
+                window[11] = image[(i+1)*(WIDTH+6) + j+4];
+                window[12] = image[(i+1)*(WIDTH+6) + j+5];
+                window[13] = image[(i+1)*(WIDTH+6) + j+6];
+                
+                window[14] = image[(i+2)*(WIDTH+6) + j+0];
+                window[15] = image[(i+2)*(WIDTH+6) + j+1];
+                window[16] = image[(i+2)*(WIDTH+6) + j+2];
+                window[17] = image[(i+2)*(WIDTH+6) + j+3];
+                window[18] = image[(i+2)*(WIDTH+6) + j+4];
+                window[19] = image[(i+2)*(WIDTH+6) + j+5];
+                window[20] = image[(i+2)*(WIDTH+6) + j+6];
+
+                window[21] = image[(i+3)*(WIDTH+6) + j+0];
+                window[22] = image[(i+3)*(WIDTH+6) + j+1];
+                window[23] = image[(i+3)*(WIDTH+6) + j+2];
+                window[24] = image[(i+3)*(WIDTH+6) + j+3];
+                window[25] = image[(i+3)*(WIDTH+6) + j+4];
+                window[26] = image[(i+3)*(WIDTH+6) + j+5];
+                window[27] = image[(i+3)*(WIDTH+6) + j+6];
+
+                window[28] = image[(i+4)*(WIDTH+6) + j+0];
+                window[29] = image[(i+4)*(WIDTH+6) + j+1];
+                window[30] = image[(i+4)*(WIDTH+6) + j+2];
+                window[31] = image[(i+4)*(WIDTH+6) + j+3];
+                window[32] = image[(i+4)*(WIDTH+6) + j+4];
+                window[33] = image[(i+4)*(WIDTH+6) + j+5];
+                window[34] = image[(i+4)*(WIDTH+6) + j+6];
+
+                window[35] = image[(i+5)*(WIDTH+6) + j+0];
+                window[36] = image[(i+5)*(WIDTH+6) + j+1];
+                window[37] = image[(i+5)*(WIDTH+6) + j+2];
+                window[38] = image[(i+5)*(WIDTH+6) + j+3];
+                window[39] = image[(i+5)*(WIDTH+6) + j+4];
+                window[40] = image[(i+5)*(WIDTH+6) + j+5];
+                window[41] = image[(i+5)*(WIDTH+6) + j+6];
+
+                window[42] = image[(i+6)*(WIDTH+6) + j+0];
+                window[43] = image[(i+6)*(WIDTH+6) + j+1];
+                window[44] = image[(i+6)*(WIDTH+6) + j+2];
+                window[45] = image[(i+6)*(WIDTH+6) + j+3];
+                window[46] = image[(i+6)*(WIDTH+6) + j+4];
+                window[47] = image[(i+6)*(WIDTH+6) + j+5];
+                window[48] = image[(i+6)*(WIDTH+6) + j+6];
+
+                conv = 0;
+
+                for(int k = 0; k < 7*7; k++)
+                {
+                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                }
+
+                output4[filter*DIM_4*DIM_4 + ((i/1)*DIM_4 + (j/1))] = conv;
+            }
+        }
+    }
+/*
+    filter++;
+
+    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    {
+        output[id] = 1 / (1 + expf(-1*output[id]));
+    }
+*/
+}
+
+void conv5_layer()
+{
+    int filter, id = 0;
+    float conv;
+    unsigned char window[7*7];
+    
+    for(filter = 0; filter < N_FILTERS_512; filter++)
+    {
+        for(int i = 0; i < DIM_4); i = i + 2)
+        {
+            for(int j = 0; j < DIM_4; j = j + 2)
+            {
+                window[0] = image[(i+0)*(WIDTH+6) + j+0];
+                window[1] = image[(i+0)*(WIDTH+6) + j+1];
+                window[2] = image[(i+0)*(WIDTH+6) + j+2];
+                window[3] = image[(i+0)*(WIDTH+6) + j+3];
+                window[4] = image[(i+0)*(WIDTH+6) + j+4];
+                window[5] = image[(i+0)*(WIDTH+6) + j+5];
+                window[6] = image[(i+0)*(WIDTH+6) + j+6];
+                
+                window[7] = image[(i+1)*(WIDTH+6) + j+0];
+                window[8] = image[(i+1)*(WIDTH+6) + j+1];
+                window[9] = image[(i+1)*(WIDTH+6) + j+2];
+                window[10] = image[(i+1)*(WIDTH+6) + j+3];
+                window[11] = image[(i+1)*(WIDTH+6) + j+4];
+                window[12] = image[(i+1)*(WIDTH+6) + j+5];
+                window[13] = image[(i+1)*(WIDTH+6) + j+6];
+                
+                window[14] = image[(i+2)*(WIDTH+6) + j+0];
+                window[15] = image[(i+2)*(WIDTH+6) + j+1];
+                window[16] = image[(i+2)*(WIDTH+6) + j+2];
+                window[17] = image[(i+2)*(WIDTH+6) + j+3];
+                window[18] = image[(i+2)*(WIDTH+6) + j+4];
+                window[19] = image[(i+2)*(WIDTH+6) + j+5];
+                window[20] = image[(i+2)*(WIDTH+6) + j+6];
+
+                window[21] = image[(i+3)*(WIDTH+6) + j+0];
+                window[22] = image[(i+3)*(WIDTH+6) + j+1];
+                window[23] = image[(i+3)*(WIDTH+6) + j+2];
+                window[24] = image[(i+3)*(WIDTH+6) + j+3];
+                window[25] = image[(i+3)*(WIDTH+6) + j+4];
+                window[26] = image[(i+3)*(WIDTH+6) + j+5];
+                window[27] = image[(i+3)*(WIDTH+6) + j+6];
+
+                window[28] = image[(i+4)*(WIDTH+6) + j+0];
+                window[29] = image[(i+4)*(WIDTH+6) + j+1];
+                window[30] = image[(i+4)*(WIDTH+6) + j+2];
+                window[31] = image[(i+4)*(WIDTH+6) + j+3];
+                window[32] = image[(i+4)*(WIDTH+6) + j+4];
+                window[33] = image[(i+4)*(WIDTH+6) + j+5];
+                window[34] = image[(i+4)*(WIDTH+6) + j+6];
+
+                window[35] = image[(i+5)*(WIDTH+6) + j+0];
+                window[36] = image[(i+5)*(WIDTH+6) + j+1];
+                window[37] = image[(i+5)*(WIDTH+6) + j+2];
+                window[38] = image[(i+5)*(WIDTH+6) + j+3];
+                window[39] = image[(i+5)*(WIDTH+6) + j+4];
+                window[40] = image[(i+5)*(WIDTH+6) + j+5];
+                window[41] = image[(i+5)*(WIDTH+6) + j+6];
+
+                window[42] = image[(i+6)*(WIDTH+6) + j+0];
+                window[43] = image[(i+6)*(WIDTH+6) + j+1];
+                window[44] = image[(i+6)*(WIDTH+6) + j+2];
+                window[45] = image[(i+6)*(WIDTH+6) + j+3];
+                window[46] = image[(i+6)*(WIDTH+6) + j+4];
+                window[47] = image[(i+6)*(WIDTH+6) + j+5];
+                window[48] = image[(i+6)*(WIDTH+6) + j+6];
+
+                conv = 0;
+
+                for(int k = 0; k < 7*7; k++)
+                {
+                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                }
+
+                output5[filter*DIM_5*DIM_5 + ((i/1)*DIM_5 + (j/1))] = conv;
+            }
+        }
+    }
+/*
+    filter++;
+
+    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    {
+        output[id] = 1 / (1 + expf(-1*output[id]));
+    }
+*/
+}
+
 int main(int argc, const char * argv[])
 {
     FILE *picture;
@@ -184,6 +540,10 @@ int main(int argc, const char * argv[])
     zero_padding(picture);
     init_weights_7x7();
     conv1_layer();
+    conv2_layer();
+    conv3_layer();
+    conv4_layer();
+    conv5_layer();
 
     /*for(int filter = 0; filter < N_FILTERS; filter++)
     {  
