@@ -20,8 +20,18 @@ static float output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
 static float output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 
 static float weights_conv1[N_FILTERS_64*7*7];
+static float weights_conv2[N_FILTERS_64*3*3];
 
-void zero_padding(FILE* picture)
+void init_weights_conv1()
+{
+    for(int i = 0; i < N_FILTERS_64*7*7; i++)
+    {
+        // filters[i] = rand()/RAND_MAX;
+        weights_conv1[i] = 1;
+    }
+}
+
+void zero_padding_conv1(FILE* picture)
 {
     int c;
     int n = 0;
@@ -37,7 +47,7 @@ void zero_padding(FILE* picture)
             {
                 if(i < 3) 
                 {
-                    image[(i+1)*230 + j] = 0;
+                    image[i*230 + j] = 0;
                     count++;
                 }
                 else image[(i+224)*230 + j] = 0;
@@ -77,70 +87,6 @@ void zero_padding(FILE* picture)
     }
 }
 
-void zero_padding_conv2(FILE* picture)
-{
-    int c;
-    int n = 0;
-    int line = 0;
-    int count = 0;
-    bool isPadding = 1;
-
-    if (picture != NULL)
-    {
-        for(int i = 0; i < 2; i++)
-        {
-            for(int j = 0; j < 114; j++)
-            {
-                if(i < 1) 
-                {
-                    image[(i+1)*114 + j] = 0;
-                    count++;
-                }
-                else image[(i+112)*114 + j] = 0;
-            }
-        }
-
-        do {
-            c = fgetc(picture);
-            
-            if( feof(picture) ) break;
-            else if(c == '\n' && n < 1) n++;
-            else if(n >= 1)
-            {
-                while(isPadding)
-                {
-                    image[count] = 0;
-                    count++;
-
-                    if(line == 113) line = 0;
-                    else if(line == 0) 
-                    {
-                        line++;
-                        isPadding = 0;
-                    }
-                }
-                
-                image[count] = c;
-                count++;
-
-                if(line == 112) isPadding = 1;
-                line++;
-            }
-        } while(1);
-
-        image[52208] = 0;
-    }
-}
-
-void init_weights_7x7()
-{
-    for(int i = 0; i < N_FILTERS_64*7*7; i++)
-    {
-        // filters[i] = rand()/RAND_MAX;
-        weights_conv1[i] = 1;
-    }
-}
-
 void conv1_layer()
 {
     int filter, id = 0;
@@ -149,74 +95,74 @@ void conv1_layer()
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
-        for(int i = 0; i < DIM_0); i = i + 2)
+        for(int i = 0; i < DIM_0; i = i + 2)
         {
             for(int j = 0; j < DIM_0; j = j + 2)
             {
-                window[0] = image[(i+0)*(WIDTH+6) + j+0];
-                window[1] = image[(i+0)*(WIDTH+6) + j+1];
-                window[2] = image[(i+0)*(WIDTH+6) + j+2];
-                window[3] = image[(i+0)*(WIDTH+6) + j+3];
-                window[4] = image[(i+0)*(WIDTH+6) + j+4];
-                window[5] = image[(i+0)*(WIDTH+6) + j+5];
-                window[6] = image[(i+0)*(WIDTH+6) + j+6];
+                window[0] = image[(i+0)*(DIM_0+6) + j+0];
+                window[1] = image[(i+0)*(DIM_0+6) + j+1];
+                window[2] = image[(i+0)*(DIM_0+6) + j+2];
+                window[3] = image[(i+0)*(DIM_0+6) + j+3];
+                window[4] = image[(i+0)*(DIM_0+6) + j+4];
+                window[5] = image[(i+0)*(DIM_0+6) + j+5];
+                window[6] = image[(i+0)*(DIM_0+6) + j+6];
                 
-                window[7] = image[(i+1)*(WIDTH+6) + j+0];
-                window[8] = image[(i+1)*(WIDTH+6) + j+1];
-                window[9] = image[(i+1)*(WIDTH+6) + j+2];
-                window[10] = image[(i+1)*(WIDTH+6) + j+3];
-                window[11] = image[(i+1)*(WIDTH+6) + j+4];
-                window[12] = image[(i+1)*(WIDTH+6) + j+5];
-                window[13] = image[(i+1)*(WIDTH+6) + j+6];
+                window[7] = image[(i+1)*(DIM_0+6) + j+0];
+                window[8] = image[(i+1)*(DIM_0+6) + j+1];
+                window[9] = image[(i+1)*(DIM_0+6) + j+2];
+                window[10] = image[(i+1)*(DIM_0+6) + j+3];
+                window[11] = image[(i+1)*(DIM_0+6) + j+4];
+                window[12] = image[(i+1)*(DIM_0+6) + j+5];
+                window[13] = image[(i+1)*(DIM_0+6) + j+6];
                 
-                window[14] = image[(i+2)*(WIDTH+6) + j+0];
-                window[15] = image[(i+2)*(WIDTH+6) + j+1];
-                window[16] = image[(i+2)*(WIDTH+6) + j+2];
-                window[17] = image[(i+2)*(WIDTH+6) + j+3];
-                window[18] = image[(i+2)*(WIDTH+6) + j+4];
-                window[19] = image[(i+2)*(WIDTH+6) + j+5];
-                window[20] = image[(i+2)*(WIDTH+6) + j+6];
+                window[14] = image[(i+2)*(DIM_0+6) + j+0];
+                window[15] = image[(i+2)*(DIM_0+6) + j+1];
+                window[16] = image[(i+2)*(DIM_0+6) + j+2];
+                window[17] = image[(i+2)*(DIM_0+6) + j+3];
+                window[18] = image[(i+2)*(DIM_0+6) + j+4];
+                window[19] = image[(i+2)*(DIM_0+6) + j+5];
+                window[20] = image[(i+2)*(DIM_0+6) + j+6];
 
-                window[21] = image[(i+3)*(WIDTH+6) + j+0];
-                window[22] = image[(i+3)*(WIDTH+6) + j+1];
-                window[23] = image[(i+3)*(WIDTH+6) + j+2];
-                window[24] = image[(i+3)*(WIDTH+6) + j+3];
-                window[25] = image[(i+3)*(WIDTH+6) + j+4];
-                window[26] = image[(i+3)*(WIDTH+6) + j+5];
-                window[27] = image[(i+3)*(WIDTH+6) + j+6];
+                window[21] = image[(i+3)*(DIM_0+6) + j+0];
+                window[22] = image[(i+3)*(DIM_0+6) + j+1];
+                window[23] = image[(i+3)*(DIM_0+6) + j+2];
+                window[24] = image[(i+3)*(DIM_0+6) + j+3];
+                window[25] = image[(i+3)*(DIM_0+6) + j+4];
+                window[26] = image[(i+3)*(DIM_0+6) + j+5];
+                window[27] = image[(i+3)*(DIM_0+6) + j+6];
 
-                window[28] = image[(i+4)*(WIDTH+6) + j+0];
-                window[29] = image[(i+4)*(WIDTH+6) + j+1];
-                window[30] = image[(i+4)*(WIDTH+6) + j+2];
-                window[31] = image[(i+4)*(WIDTH+6) + j+3];
-                window[32] = image[(i+4)*(WIDTH+6) + j+4];
-                window[33] = image[(i+4)*(WIDTH+6) + j+5];
-                window[34] = image[(i+4)*(WIDTH+6) + j+6];
+                window[28] = image[(i+4)*(DIM_0+6) + j+0];
+                window[29] = image[(i+4)*(DIM_0+6) + j+1];
+                window[30] = image[(i+4)*(DIM_0+6) + j+2];
+                window[31] = image[(i+4)*(DIM_0+6) + j+3];
+                window[32] = image[(i+4)*(DIM_0+6) + j+4];
+                window[33] = image[(i+4)*(DIM_0+6) + j+5];
+                window[34] = image[(i+4)*(DIM_0+6) + j+6];
 
-                window[35] = image[(i+5)*(WIDTH+6) + j+0];
-                window[36] = image[(i+5)*(WIDTH+6) + j+1];
-                window[37] = image[(i+5)*(WIDTH+6) + j+2];
-                window[38] = image[(i+5)*(WIDTH+6) + j+3];
-                window[39] = image[(i+5)*(WIDTH+6) + j+4];
-                window[40] = image[(i+5)*(WIDTH+6) + j+5];
-                window[41] = image[(i+5)*(WIDTH+6) + j+6];
+                window[35] = image[(i+5)*(DIM_0+6) + j+0];
+                window[36] = image[(i+5)*(DIM_0+6) + j+1];
+                window[37] = image[(i+5)*(DIM_0+6) + j+2];
+                window[38] = image[(i+5)*(DIM_0+6) + j+3];
+                window[39] = image[(i+5)*(DIM_0+6) + j+4];
+                window[40] = image[(i+5)*(DIM_0+6) + j+5];
+                window[41] = image[(i+5)*(DIM_0+6) + j+6];
 
-                window[42] = image[(i+6)*(WIDTH+6) + j+0];
-                window[43] = image[(i+6)*(WIDTH+6) + j+1];
-                window[44] = image[(i+6)*(WIDTH+6) + j+2];
-                window[45] = image[(i+6)*(WIDTH+6) + j+3];
-                window[46] = image[(i+6)*(WIDTH+6) + j+4];
-                window[47] = image[(i+6)*(WIDTH+6) + j+5];
-                window[48] = image[(i+6)*(WIDTH+6) + j+6];
+                window[42] = image[(i+6)*(DIM_0+6) + j+0];
+                window[43] = image[(i+6)*(DIM_0+6) + j+1];
+                window[44] = image[(i+6)*(DIM_0+6) + j+2];
+                window[45] = image[(i+6)*(DIM_0+6) + j+3];
+                window[46] = image[(i+6)*(DIM_0+6) + j+4];
+                window[47] = image[(i+6)*(DIM_0+6) + j+5];
+                window[48] = image[(i+6)*(DIM_0+6) + j+6];
 
                 conv = 0;
 
                 for(int k = 0; k < 7*7; k++)
                 {
-                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                    conv = conv + (window[k] * weights_conv1[k + 7*7*filter]);
                 }
 
-                output1[filter*DIM_1*DIM_1 + ((i/1)*DIM_1 + (j/1))] = conv;
+                output1[filter*(DIM_1+2)*(DIM_1+2) + ((i/2 + 1)*(DIM_1+2) + (j/2 + 1))] = conv;
             }
         }
     }
@@ -230,38 +176,79 @@ void conv1_layer()
 */
 }
 
+void init_weights_conv2()
+{
+    for(int i = 0; i < N_FILTERS_64*3*3; i++)
+    {
+        // filters[i] = rand()/RAND_MAX;
+        weights_conv2[i] = 1;
+    }
+}
+
+void zero_padding_conv2()
+{
+    for(int count = 0; count < 64; count = count + 1)
+    {    
+        //Popula as linhas nas extremidades
+        for(int i = 0; i < 2; i++)
+        {
+            for(int j = 0; j < DIM_1 + 2; j++)
+            {
+                if(i < 1) 
+                {
+                    output1[i*(DIM_1+2) + j] = 0;
+                }
+                else output1[(i+DIM_1)*(DIM_1+2) + j] = 0;
+            }
+        }
+
+        //Popula as colunas nas extremidades
+        for(int j = 0; j < 2; j++)
+        {
+            for(int i = 0; i < DIM_1 + 2; i++)
+            {
+                if(j < 1) 
+                {
+                    output1[i*(DIM_1 + 2)] = 0;
+                }
+                else output1[(i+1)*(DIM_1 + 2) - 1] = 0;
+            }
+        }
+    }
+}
+
 void conv2_layer()
 {
     int filter, id = 0;
     float conv;
-    unsigned char window[7*7];
+    unsigned char window[3*3];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
-        for(int i = 0; i < DIM_1); i = i + 2)
+        for(int i = 0; i < DIM_1; i = i + 1)
         {
-            for(int j = 0; j < DIM_1; j = j + 2)
+            for(int j = 0; j < DIM_1; j = j + 1)
             {
-                window[0] = image[(i+0)*(WIDTH+6) + j+0];
-                window[1] = image[(i+0)*(WIDTH+6) + j+1];
-                window[2] = image[(i+0)*(WIDTH+6) + j+2];
+                window[0] = output1[(i+0)*(DIM_1+2) + j+0];
+                window[1] = output1[(i+0)*(DIM_1+2) + j+1];
+                window[2] = output1[(i+0)*(DIM_1+2) + j+2];
 
-                window[3] = image[(i+0)*(WIDTH+6) + j+3];
-                window[4] = image[(i+0)*(WIDTH+6) + j+4];
-                window[5] = image[(i+0)*(WIDTH+6) + j+5];
+                window[3] = output1[(i+1)*(DIM_1+2) + j+0];
+                window[4] = output1[(i+1)*(DIM_1+2) + j+1];
+                window[5] = output1[(i+1)*(DIM_1+2) + j+2];
 
-                window[6] = image[(i+0)*(WIDTH+6) + j+6]; 
-                window[7] = image[(i+1)*(WIDTH+6) + j+0];
-                window[8] = image[(i+1)*(WIDTH+6) + j+1];
+                window[6] = output1[(i+2)*(DIM_1+2) + j+0]; 
+                window[7] = output1[(i+2)*(DIM_1+2) + j+1];
+                window[8] = output1[(i+2)*(DIM_1+2) + j+2];
 
                 conv = 0;
 
-                for(int k = 0; k < 7*7; k++)
+                for(int k = 0; k < 3*3; k++)
                 {
-                    conv = conv + (window[k] * filters[k + 7*7*filter]);
+                    conv = conv + (window[k] * weights_conv2[k + 3*3*filter]);
                 }
 
-                output2[filter*DIM_2*DIM_2 + ((i/1)*DIM_2 + (j/1))] = conv;
+                output2[filter*DIM_2*DIM_2 + ((i/2 + 2*(i%2))*DIM_2 + (j/2 + 2*(j%2)))] = conv;
             }
         }
     }
@@ -416,14 +403,16 @@ int main(int argc, const char * argv[])
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
 
+    init_weights_conv1();
+    init_weights_conv2();
+
     zero_padding(picture);
-    init_weights_7x7();
     conv1_layer();
-    zero_padding_conv2(output1); //não sei se isso é correto, mas me parece razoável
+    zero_padding_conv2();
     conv2_layer();
-    conv3_layer();
-    conv4_layer();
-    conv5_layer();
+    //conv3_layer();
+    //conv4_layer();
+    //conv5_layer();
 
     /*for(int filter = 0; filter < N_FILTERS; filter++)
     {  
