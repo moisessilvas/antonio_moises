@@ -419,7 +419,7 @@ int main(int argc, const char * argv[])
     zero_padding(picture);
     init_weights_7x7();
     conv1_layer();
-    zero_padding_conv2(output1);
+    zero_padding_conv2(output1); //não sei se isso é correto, mas me parece razoável
     conv2_layer();
     conv3_layer();
     conv4_layer();
