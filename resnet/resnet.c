@@ -20,7 +20,7 @@ static float output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
 static float output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 static float output3[(DIM_3+2)*(DIM_2+2)*N_FILTERS_128];
 static float output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-static float output5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 
 static float weights_conv1[N_FILTERS_64*7*7];
 static float weights_conv2[N_FILTERS_64*3*3];
@@ -317,7 +317,7 @@ void conv3_layer()
     
     for(filter = 0; filter < N_FILTERS_128; filter++)
     {
-        for(int i = 0; i < DIM_2); i = i + 2)
+        for(int i = 0; i < DIM_2; i = i + 2)
         {
             for(int j = 0; j < DIM_2; j = j + 2)
             {
@@ -403,7 +403,7 @@ void conv4_layer()
     
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
-        for(int i = 0; i < DIM_3); i = i + 2)
+        for(int i = 0; i < DIM_3; i = i + 2)
         {
             for(int j = 0; j < DIM_3; j = j + 2)
             {
@@ -489,7 +489,7 @@ void conv5_layer()
     
     for(filter = 0; filter < N_FILTERS_512; filter++)
     {
-        for(int i = 0; i < DIM_4); i = i + 2)
+        for(int i = 0; i < DIM_4; i = i + 2)
         {
             for(int j = 0; j < DIM_4; j = j + 2)
             {
@@ -538,28 +538,26 @@ int main(int argc, const char * argv[])
     //init_weights_conv4();
     //init_weights_conv5();
 
-    zero_padding(picture);
+    zero_padding_conv1(picture);
     conv1_layer();
     zero_padding_conv2();
     conv2_layer();
-    //zero_padding_conv3();
+    zero_padding_conv3();
     //conv3_layer();
     //zero_padding_conv4();
     //conv4_layer();
     //zero_padding_conv5();
     //conv5_layer();
 
-    /*for(int filter = 0; filter < N_FILTERS; filter++)
-    {  
-        for(int linha = 0; linha < OUT_DIM*2; linha++)
+    for(int i = 0; i < DIM_2 + 2; i++)
+    {
+        for(int j = 0; j < DIM_2 + 2; j++)
         {
-            for(int coluna = 0; coluna < OUT_DIM*2; coluna++)
-            {
-                printf("%f ", output[filter*OUT_DIM*OUT_DIM*4 + linha*OUT_DIM*2 + coluna]);
-            }
-            printf("\n");
+            printf("%f ", output2[(i*(DIM_2 + 2) + j)]);
         }
-    }*/
+
+        printf("\n");
+    }
 
     return 0;
 }
