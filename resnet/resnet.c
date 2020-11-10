@@ -323,7 +323,9 @@ void conv2_layer()
                     window[8 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
                 }
 
-                conv = 0;
+                    window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
+                    window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
+                    window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
 
                 for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                 {
@@ -333,6 +335,7 @@ void conv2_layer()
                 output2[filter*(DIM_2+2)*(DIM_2+2) + (i+1)*DIM_2 + (j+1)] = conv;
             }
         }
+
     }
 /*
     filter++;
