@@ -28,6 +28,8 @@ static float weights_conv3[N_FILTERS_128*3*3];
 static float weights_conv4[N_FILTERS_256*3*3];
 static float weights_conv5[N_FILTERS_512*3*3];
 
+static float pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+
 void init_weights_conv1()
 {
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
@@ -191,7 +193,7 @@ void init_weights_conv2()
     }
 }
 
-void zero_padding_conv2()
+void zero_padding_pool_conv2()
 {
     for(int count = 0; count < 64; count = count + 1)
     {    
@@ -223,29 +225,100 @@ void zero_padding_conv2()
     }
 }
 
+void max_pooling_conv2()
+{
+    float window[3*3];
+    float max_pool;
+
+    for (int depth = 0; depth < N_FILTERS_64; depth++)
+    {
+        for (int i = 1; i <= DIM_1 - 2; i = i + 2)
+        {
+            for (int j = 1; j <= DIM_1 - 2; j = j + 2)
+            {
+                window[0] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+0)*(DIM_1+2) + j+0];
+                window[1] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+0)*(DIM_1+2) + j+1];
+                window[2] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+0)*(DIM_1+2) + j+2];
+
+                window[3] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+1)*(DIM_1+2) + j+0];
+                window[4] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+1)*(DIM_1+2) + j+1];
+                window[5] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+1)*(DIM_1+2) + j+2];
+
+                window[6] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+2)*(DIM_1+2) + j+0];
+                window[7] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+2)*(DIM_1+2) + j+1];
+                window[8] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+2)*(DIM_1+2) + j+2];
+
+                max_pool = 0;
+
+                for (int pool = 0; pool < 3*3; pool++)
+                {
+                    if(window[pool] > max_pool) max_pool = window[pool];
+                }
+                
+                pooling_conv2[(depth*(DIM_2+2)*(DIM_2+2)) + (i/2 + 1)*(DIM_2+2) + (j/2 + 1)] = max_pool;
+            }
+            
+        }
+        
+    }
+    
+}
+
+void zero_padding_conv2()
+{
+    for(int count = 0; count < 64; count = count + 1)
+    {    
+        //Popula as linhas nas extremidades
+        for(int i = 0; i < 2; i++)
+        {
+            for(int j = 0; j < DIM_2 + 2; j++)
+            {
+                if(i < 1) 
+                {
+                    pooling_conv2[i*(DIM_2+2) + j] = 0;
+                }
+                else pooling_conv2[(i+DIM_2)*(DIM_2+2) + j] = 0;
+            }
+        }
+
+        //Popula as colunas nas extremidades
+        for(int j = 0; j < 2; j++)
+        {
+            for(int i = 0; i < DIM_2 + 2; i++)
+            {
+                if(j < 1) 
+                {
+                    pooling_conv2[i*(DIM_2 + 2)] = 0;
+                }
+                else pooling_conv2[(i+1)*(DIM_2 + 2) - 1] = 0;
+            }
+        }
+    }
+}
+
 void conv2_layer()
 {
     int filter, id = 0;
     float conv;
-    unsigned char window[3*3];
+    float window[3*3];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
-        for(int i = 0; i < DIM_1; i = i + 1)
+        for(int i = 0; i < DIM_2; i = i + 1)
         {
-            for(int j = 0; j < DIM_1; j = j + 1)
+            for(int j = 0; j < DIM_2; j = j + 1)
             {
-                window[0] = output1[(i+0)*(DIM_1+2) + j+0];
-                window[1] = output1[(i+0)*(DIM_1+2) + j+1];
-                window[2] = output1[(i+0)*(DIM_1+2) + j+2];
+                window[0] = pooling_conv2[(i+0)*(DIM_2+2) + j+0];
+                window[1] = pooling_conv2[(i+0)*(DIM_2+2) + j+1];
+                window[2] = pooling_conv2[(i+0)*(DIM_2+2) + j+2];
 
-                window[3] = output1[(i+1)*(DIM_1+2) + j+0];
-                window[4] = output1[(i+1)*(DIM_1+2) + j+1];
-                window[5] = output1[(i+1)*(DIM_1+2) + j+2];
+                window[3] = pooling_conv2[(i+1)*(DIM_2+2) + j+0];
+                window[4] = pooling_conv2[(i+1)*(DIM_2+2) + j+1];
+                window[5] = pooling_conv2[(i+1)*(DIM_2+2) + j+2];
 
-                window[6] = output1[(i+2)*(DIM_1+2) + j+0]; 
-                window[7] = output1[(i+2)*(DIM_1+2) + j+1];
-                window[8] = output1[(i+2)*(DIM_1+2) + j+2];
+                window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
+                window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
+                window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
 
                 conv = 0;
 
@@ -529,6 +602,7 @@ void conv5_layer()
 int main(int argc, const char * argv[])
 {
     FILE *picture;
+    float dense = 0;
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
 
@@ -540,15 +614,25 @@ int main(int argc, const char * argv[])
 
     zero_padding_conv1(picture);
     conv1_layer();
+    zero_padding_pool_conv2();
+    max_pooling_conv2();
     zero_padding_conv2();
-    conv2_layer();
-    zero_padding_conv3();
+    //conv2_layer();
+    //zero_padding_conv3();
     //conv3_layer();
     //zero_padding_conv4();
     //conv4_layer();
     //zero_padding_conv5();
     //conv5_layer();
 
+    for(int id = 0; id < (DIM_2+2)*(DIM_2+2)*N_FILTERS_64; id++)
+    {
+        dense = dense + pooling_conv2[id];
+    }
+
+    printf("%f\n", dense);
+
+    /*
     for(int i = 0; i < DIM_2 + 2; i++)
     {
         for(int j = 0; j < DIM_2 + 2; j++)
@@ -558,6 +642,6 @@ int main(int argc, const char * argv[])
 
         printf("\n");
     }
-
+    */
     return 0;
 }
