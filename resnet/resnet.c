@@ -301,35 +301,38 @@ void conv2_layer()
     int filter, id = 0;
     float conv;
     float window[3*3];
-    
-    for(filter = 0; filter < N_FILTERS_64; filter++)
-    {
-        for(int i = 0; i < DIM_2; i = i + 1)
-        {
-            for(int j = 0; j < DIM_2; j = j + 1)
-            {
-                window[0] = pooling_conv2[(i+0)*(DIM_2+2) + j+0];
-                window[1] = pooling_conv2[(i+0)*(DIM_2+2) + j+1];
-                window[2] = pooling_conv2[(i+0)*(DIM_2+2) + j+2];
 
-                window[3] = pooling_conv2[(i+1)*(DIM_2+2) + j+0];
-                window[4] = pooling_conv2[(i+1)*(DIM_2+2) + j+1];
-                window[5] = pooling_conv2[(i+1)*(DIM_2+2) + j+2];
+    for(filter = 0; filter < N_FILTERS_64; filter++){
+        
+        for(int i = 0; i < DIM_2; i = i + 1){
+        
+            for(int j = 0; j < DIM_2; j = j + 1){
+            
+                for(int k = 0; k < 2; k = k + 1){
+                
+                    window[0] = pooling_conv2[(i+0)*(DIM_2+2) + j+0];
+                    window[1] = pooling_conv2[(i+0)*(DIM_2+2) + j+1];
+                    window[2] = pooling_conv2[(i+0)*(DIM_2+2) + j+2];
 
-                window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
-                window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
-                window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
+                    window[3] = pooling_conv2[(i+1)*(DIM_2+2) + j+0];
+                    window[4] = pooling_conv2[(i+1)*(DIM_2+2) + j+1];
+                    window[5] = pooling_conv2[(i+1)*(DIM_2+2) + j+2];
 
-                conv = 0;
+                    window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
+                    window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
+                    window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
 
-                for(int k = 0; k < 3*3; k++)
-                {
-                    conv = conv + (window[k] * weights_conv2[k + 3*3*filter]);
-                }
+                    conv = 0;
+
+                    for(int k = 0; k < 3*3; k++){
+                        conv = conv + (window[k] * weights_conv2[k + 3*3*filter]);
+                    }
 
                 output2[filter*DIM_2*DIM_2 + ((i/2 + 2*(i%2))*DIM_2 + (j/2 + 2*(j%2)))] = conv;
+                }
             }
         }
+
     }
 /*
     filter++;
