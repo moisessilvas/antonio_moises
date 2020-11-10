@@ -23,7 +23,7 @@ static float output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 
 static float weights_conv1[N_FILTERS_64*7*7];
-static float weights_conv2[N_FILTERS_64*3*3];
+static float weights_conv2[N_FILTERS_64*3*3*N_FILTERS_64];
 static float weights_conv3[N_FILTERS_128*3*3];
 static float weights_conv4[N_FILTERS_256*3*3];
 static float weights_conv5[N_FILTERS_512*3*3];
@@ -232,9 +232,9 @@ void max_pooling_conv2()
 
     for (int depth = 0; depth < N_FILTERS_64; depth++)
     {
-        for (int i = 1; i <= DIM_1 - 2; i = i + 2)
+        for (int i = 0; i < DIM_1; i = i + 2)
         {
-            for (int j = 1; j <= DIM_1 - 2; j = j + 2)
+            for (int j = 0; j < DIM_1; j = j + 2)
             {
                 window[0] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+0)*(DIM_1+2) + j+0];
                 window[1] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+0)*(DIM_1+2) + j+1];
@@ -298,9 +298,9 @@ void zero_padding_conv2()
 
 void conv2_layer()
 {
-    int filter, id = 0;
+    int filter;
     float conv;
-    float window[3*3];
+    float window[3*3*N_FILTERS_64];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
@@ -308,26 +308,29 @@ void conv2_layer()
         {
             for(int j = 0; j < DIM_2; j = j + 1)
             {
-                window[0] = pooling_conv2[(i+0)*(DIM_2+2) + j+0];
-                window[1] = pooling_conv2[(i+0)*(DIM_2+2) + j+1];
-                window[2] = pooling_conv2[(i+0)*(DIM_2+2) + j+2];
+                for (int depth = 0; depth < N_FILTERS_64; depth++)
+                {
+                    window[0 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[1 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[2 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
 
-                window[3] = pooling_conv2[(i+1)*(DIM_2+2) + j+0];
-                window[4] = pooling_conv2[(i+1)*(DIM_2+2) + j+1];
-                window[5] = pooling_conv2[(i+1)*(DIM_2+2) + j+2];
+                    window[3 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[4 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[5 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
 
-                window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
-                window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
-                window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
+                    window[6 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window[7 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[8 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                }
 
                 conv = 0;
 
-                for(int k = 0; k < 3*3; k++)
+                for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                 {
-                    conv = conv + (window[k] * weights_conv2[k + 3*3*filter]);
+                    conv = conv + (window[k] * weights_conv2[k + 3*3*N_FILTERS_64*filter]);
                 }
 
-                output2[filter*DIM_2*DIM_2 + ((i/2 + 2*(i%2))*DIM_2 + (j/2 + 2*(j%2)))] = conv;
+                output2[filter*(DIM_2+2)*(DIM_2+2) + (i+1)*DIM_2 + (j+1)] = conv;
             }
         }
     }
@@ -617,8 +620,8 @@ int main(int argc, const char * argv[])
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
-    //conv2_layer();
-    //zero_padding_conv3();
+    conv2_layer();
+    zero_padding_conv3();
     //conv3_layer();
     //zero_padding_conv4();
     //conv4_layer();
@@ -627,7 +630,7 @@ int main(int argc, const char * argv[])
 
     for(int id = 0; id < (DIM_2+2)*(DIM_2+2)*N_FILTERS_64; id++)
     {
-        dense = dense + pooling_conv2[id];
+        dense = dense + output2[id];
     }
 
     printf("%f\n", dense);
