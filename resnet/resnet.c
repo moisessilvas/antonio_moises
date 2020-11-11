@@ -35,7 +35,7 @@ void init_weights_conv1()
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv1[i] = 1;
+        weights_conv1[i] = 1.0f;
     }
 }
 
@@ -163,7 +163,7 @@ void conv1_layer()
                 window[47] = image[(i+6)*(DIM_0+6) + j+5];
                 window[48] = image[(i+6)*(DIM_0+6) + j+6];
 
-                conv = 0;
+                conv = 0.0f;
 
                 for(int k = 0; k < 7*7; k++)
                 {
@@ -189,7 +189,7 @@ void init_weights_conv2()
     for(int i = 0; i < N_FILTERS_64*3*3; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv2[i] = 1;
+        weights_conv2[i] = 1.0f;
     }
 }
 
@@ -248,7 +248,7 @@ void max_pooling_conv2()
                 window[7] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+2)*(DIM_1+2) + j+1];
                 window[8] = output1[(depth*(DIM_1+2)*(DIM_1+2)) + (i+2)*(DIM_1+2) + j+2];
 
-                max_pool = 0;
+                max_pool = 0.0f;
 
                 for (int pool = 0; pool < 3*3; pool++)
                 {
@@ -323,9 +323,7 @@ void conv2_layer()
                     window[8 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
                 }
 
-                    window[6] = pooling_conv2[(i+2)*(DIM_2+2) + j+0]; 
-                    window[7] = pooling_conv2[(i+2)*(DIM_2+2) + j+1];
-                    window[8] = pooling_conv2[(i+2)*(DIM_2+2) + j+2];
+                conv = 0.0f;
 
                 for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                 {
@@ -608,7 +606,7 @@ void conv5_layer()
 int main(int argc, const char * argv[])
 {
     FILE *picture;
-    float dense = 0;
+    float dense = 0.0f;
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
 
