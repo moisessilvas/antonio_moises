@@ -18,13 +18,17 @@
 static int image[(DIM_0+6)*(DIM_0+6)];
 static float output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
 static float output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-static float output3[(DIM_3+2)*(DIM_2+2)*N_FILTERS_128];
+static float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+static float output3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+static float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
 static float output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 
 static float weights_conv1[N_FILTERS_64*7*7];
-static float weights_conv2[N_FILTERS_64*3*3*N_FILTERS_64];
-static float weights_conv3[N_FILTERS_128*3*3];
+static float weights_conv2_layer1[N_FILTERS_64*3*3*N_FILTERS_64];
+static float weights_conv2_layer2[N_FILTERS_64*3*3*N_FILTERS_64];
+static float weights_conv3_layer1[N_FILTERS_128*3*3*N_FILTERS_64];
+static float weights_conv3_layer2[N_FILTERS_128*3*3*N_FILTERS_64];
 static float weights_conv4[N_FILTERS_256*3*3];
 static float weights_conv5[N_FILTERS_512*3*3];
 
@@ -186,10 +190,11 @@ void conv1_layer()
 
 void init_weights_conv2()
 {
-    for(int i = 0; i < N_FILTERS_64*3*3; i++)
+    for(int i = 0; i < N_FILTERS_64*3*3*N_FILTERS_64; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv2[i] = 1.0f;
+        weights_conv2_layer1[i] = 1.0f;
+        weights_conv2_layer2[i] = 1.0f;
     }
 }
 
@@ -296,11 +301,12 @@ void zero_padding_conv2()
     }
 }
 
-void conv2_layer()
+void conv2_layer(float input[])
 {
     int filter;
     float conv;
-    float window[3*3*N_FILTERS_64];
+    float window_layer1[3*3*N_FILTERS_64];
+    float window_layer2[3*3*N_FILTERS_64];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
@@ -310,47 +316,77 @@ void conv2_layer()
             {
                 for (int depth = 0; depth < N_FILTERS_64; depth++)
                 {
-                    window[0 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
-                    window[1 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
-                    window[2 + depth*9] = pooling_conv2[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[0 + depth*9] = input[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[1 + depth*9] = input[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[2 + depth*9] = input[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
 
-                    window[3 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
-                    window[4 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
-                    window[5 + depth*9] = pooling_conv2[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[3 + depth*9] = input[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[4 + depth*9] = input[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[5 + depth*9] = input[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
 
-                    window[6 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
-                    window[7 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
-                    window[8 + depth*9] = pooling_conv2[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[6 + depth*9] = input[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window_layer1[7 + depth*9] = input[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[8 + depth*9] = input[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
                 }
 
                 conv = 0.0f;
 
                 for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                 {
-                    conv = conv + (window[k] * weights_conv2[k + 3*3*N_FILTERS_64*filter]);
+                    conv = conv + (window_layer1[k] * weights_conv2_layer1[k + 3*3*N_FILTERS_64*filter]);
+                }
+
+                output2_temp[filter*(DIM_2+2)*(DIM_2+2) + (i+1)*DIM_2 + (j+1)] = conv;
+            }
+        }
+    }
+
+    for(filter = 0; filter < N_FILTERS_64; filter++)
+    {
+        for(int i = 0; i < DIM_2; i = i + 1)
+        {
+            for(int j = 0; j < DIM_2; j = j + 1)
+            {
+                for (int depth = 0; depth < N_FILTERS_64; depth++)
+                {
+                    window_layer2[0 + depth*9] = output2_temp[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[1 + depth*9] = output2_temp[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[2 + depth*9] = output2_temp[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[3 + depth*9] = output2_temp[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[4 + depth*9] = output2_temp[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[5 + depth*9] = output2_temp[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[6 + depth*9] = output2_temp[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window_layer2[7 + depth*9] = output2_temp[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[8 + depth*9] = output2_temp[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                }
+
+                conv = 0.0f;
+
+                for(int k = 0; k < 3*3*N_FILTERS_64; k++)
+                {
+                    conv = conv + (window_layer2[k] * weights_conv2_layer2[k + 3*3*N_FILTERS_64*filter]);
                 }
 
                 output2[filter*(DIM_2+2)*(DIM_2+2) + (i+1)*DIM_2 + (j+1)] = conv;
             }
         }
-
     }
-/*
-    filter++;
 
-    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    for(int n = 0; n < (DIM_2+2)*(DIM_2+2)*N_FILTERS_64; n++)
     {
-        output[id] = 1 / (1 + expf(-1*output[id]));
+        output2[n] = input[n] + output2[n];
     }
-*/
 }
 
 void init_weights_conv3()
 {
-    for(int i = 0; i < N_FILTERS_128*3*3; i++)
+    for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_64; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv3[i] = 1;
+        weights_conv3_layer1[i] = 1;
+        weights_conv3_layer2[i] = 1
     }
 }
 
@@ -386,49 +422,83 @@ void zero_padding_conv3()
     }
 }
 
-void conv3_layer()
+void conv3_layer(float input[], int stride)
 {
-    int filter, id = 0;
+    int filter;
     float conv;
-    unsigned char window[3*3];
+    float window_layer1[3*3*N_FILTERS_64];
+    float window_layer2[3*3*N_FILTERS_64];
     
     for(filter = 0; filter < N_FILTERS_128; filter++)
     {
-        for(int i = 0; i < DIM_2; i = i + 2)
+        for(int i = 0; i < DIM_2; i = i + stride)
         {
-            for(int j = 0; j < DIM_2; j = j + 2)
+            for(int j = 0; j < DIM_2; j = j + stride)
             {
-                window[0] = image[(i+0)*(DIM_2+2) + j+0];
-                window[1] = image[(i+0)*(DIM_2+2) + j+1];
-                window[2] = image[(i+0)*(DIM_2+2) + j+2];
-
-                window[3] = image[(i+1)*(DIM_2+2) + j+0];
-                window[4] = image[(i+1)*(DIM_2+2) + j+1];
-                window[5] = image[(i+1)*(DIM_2+2) + j+2];
-
-                window[6] = image[(i+2)*(DIM_2+2) + j+0]; 
-                window[7] = image[(i+2)*(DIM_2+2) + j+1];
-                window[8] = image[(i+2)*(DIM_2+2) + j+2];
-
-                conv = 0;
-
-                for(int k = 0; k < 3*3; k++)
+                for (int depth = 0; depth < N_FILTERS_64; depth++)
                 {
-                    conv = conv + (window[k] * weights_conv3[k + 3*3*filter]);
+                    window_layer1[0 + depth*9] = input[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[1 + depth*9] = input[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[2 + depth*9] = input[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer1[3 + depth*9] = input[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[4 + depth*9] = input[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[5 + depth*9] = input[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer1[6 + depth*9] = input[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window_layer1[7 + depth*9] = input[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer1[8 + depth*9] = input[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
                 }
 
-                output3[filter*DIM_3*DIM_3 + ((i/2 + 2*(i%2))*DIM_3 + (j/2 + 2*(j%2)))] = conv;
+                conv = 0.0f;
+
+                for(int k = 0; k < 3*3*N_FILTERS_64; k++)
+                {
+                    conv = conv + (window_layer1[k] * weights_conv3_layer1[k + 3*3*N_FILTERS_64*filter]);
+                }
+
+                output3_temp[filter*(DIM_3+2)*(DIM_3+2) + (i+1)*DIM_3 + (j+1)] = conv;
             }
         }
     }
-/*
-    filter++;
 
-    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    for(filter = 0; filter < N_FILTERS_128; filter++)
     {
-        output[id] = 1 / (1 + expf(-1*output[id]));
+        for(int i = 0; i < DIM_2; i = i + 1)
+        {
+            for(int j = 0; j < DIM_2; j = j + 1)
+            {
+                for (int depth = 0; depth < N_FILTERS_64; depth++)
+                {
+                    window_layer2[0 + depth*9] = output3_temp[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[1 + depth*9] = output3_temp[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[2 + depth*9] = output3_temp[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[3 + depth*9] = output3_temp[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[4 + depth*9] = output3_temp[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[5 + depth*9] = output3_temp[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[6 + depth*9] = output3_temp[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window_layer2[7 + depth*9] = output3_temp[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[8 + depth*9] = output3_temp[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                }
+
+                conv = 0.0f;
+
+                for(int k = 0; k < 3*3*N_FILTERS_64; k++)
+                {
+                    conv = conv + (window_layer2[k] * weights_conv3_layer2[k + 3*3*N_FILTERS_64*filter]);
+                }
+
+                output3[filter*(DIM_3+2)*(DIM_3+2) + (i+1)*DIM_3 + (j+1)] = conv;
+            }
+        }
     }
-*/
+
+    for(int n = 0; n < (DIM_3+2)*(DIM_3+2)*N_FILTERS_128; n++)
+    {
+        output3[n] = input[n] + output3[n];
+    }
 }
 
 void init_weights_conv4()
@@ -472,49 +542,92 @@ void zero_padding_conv4()
     }
 }
 
-void conv4_layer()
+void conv4_layer(float input[], int stride, bool first_conv)
 {
-    int filter, id = 0;
+    int dim = DIM_4; 
+    int filter_size = N_FILTERS_256;
+    
+    if(first_conv)
+    {
+        dim = DIM_3;
+        filter_size = N_FILTERS_128;
+    } 
+    
+    int filter;
     float conv;
-    unsigned char window[3*3];
+    float window_layer1[3*3*filter_size];
+    float window_layer2[3*3*filter_size];
     
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
-        for(int i = 0; i < DIM_3; i = i + 2)
+        for(int i = 0; i < dim; i = i + stride)
         {
-            for(int j = 0; j < DIM_3; j = j + 2)
+            for(int j = 0; j < dim; j = j + stride)
             {
-                window[0] = image[(i+0)*(DIM_3+2) + j+0];
-                window[1] = image[(i+0)*(DIM_3+2) + j+1];
-                window[2] = image[(i+0)*(DIM_3+2) + j+2];
-
-                window[3] = image[(i+1)*(DIM_3+2) + j+0];
-                window[4] = image[(i+1)*(DIM_3+2) + j+1];
-                window[5] = image[(i+1)*(DIM_3+2) + j+2];
-
-                window[6] = image[(i+2)*(DIM_3+2) + j+0]; 
-                window[7] = image[(i+2)*(DIM_3+2) + j+1];
-                window[8] = image[(i+2)*(DIM_3+2) + j+2];
-
-                conv = 0;
-
-                for(int k = 0; k < 3*3; k++)
+                for (int depth = 0; depth < filter_size; depth++)
                 {
-                    conv = conv + (window[k] * weights_conv4[k + 3*3*filter]);
+                    window_layer1[0 + depth*9] = input[(i+0)*(dim+2) + j+0 + depth*(dim+2)*(dim+2)];
+                    window_layer1[1 + depth*9] = input[(i+0)*(dim+2) + j+1 + depth*(dim+2)*(dim+2)];
+                    window_layer1[2 + depth*9] = input[(i+0)*(dim+2) + j+2 + depth*(dim+2)*(dim+2)];
+
+                    window_layer1[3 + depth*9] = input[(i+1)*(dim+2) + j+0 + depth*(dim+2)*(dim+2)];
+                    window_layer1[4 + depth*9] = input[(i+1)*(dim+2) + j+1 + depth*(dim+2)*(dim+2)];
+                    window_layer1[5 + depth*9] = input[(i+1)*(dim+2) + j+2 + depth*(dim+2)*(dim+2)];
+
+                    window_layer1[6 + depth*9] = input[(i+2)*(dim+2) + j+0 + depth*(dim+2)*(dim+2)]; 
+                    window_layer1[7 + depth*9] = input[(i+2)*(dim+2) + j+1 + depth*(dim+2)*(dim+2)];
+                    window_layer1[8 + depth*9] = input[(i+2)*(dim+2) + j+2 + depth*(dim+2)*(dim+2)];
                 }
 
-                output4[filter*DIM_4*DIM_4 + ((i/2 + 2*(i%2))*DIM_4 + (j/2 + 2*(j%2)))] = conv;
+                conv = 0.0f;
+
+                for(int k = 0; k < 3*3*filter_size; k++)
+                {
+                    conv = conv + (window_layer1[k] * weights_conv4_layer1[k + 3*3*filter_size*filter]);
+                }
+
+                output4_temp[filter*(DIM_4+2)*(DIM_4+2) + (i+1)*DIM_4 + (j+1)] = conv;
             }
         }
     }
-/*
-    filter++;
 
-    for(int id = 0; id < filter*(WIDTH-3)*(HEIGHT-3); id++)
+    for(filter = 0; filter < N_FILTERS_256; filter++)
     {
-        output[id] = 1 / (1 + expf(-1*output[id]));
+        for(int i = 0; i < DIM_4; i = i + 1)
+        {
+            for(int j = 0; j < DIM_4; j = j + 1)
+            {
+                for (int depth = 0; depth < N_FILTERS_256; depth++)
+                {
+                    window_layer2[0 + depth*9] = output4_temp[(i+0)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[1 + depth*9] = output4_temp[(i+0)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[2 + depth*9] = output4_temp[(i+0)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[3 + depth*9] = output4_temp[(i+1)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[4 + depth*9] = output4_temp[(i+1)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[5 + depth*9] = output4_temp[(i+1)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+
+                    window_layer2[6 + depth*9] = output4_temp[(i+2)*(DIM_2+2) + j+0 + depth*(DIM_2+2)*(DIM_2+2)]; 
+                    window_layer2[7 + depth*9] = output4_temp[(i+2)*(DIM_2+2) + j+1 + depth*(DIM_2+2)*(DIM_2+2)];
+                    window_layer2[8 + depth*9] = output4_temp[(i+2)*(DIM_2+2) + j+2 + depth*(DIM_2+2)*(DIM_2+2)];
+                }
+
+                conv = 0.0f;
+
+                for(int k = 0; k < 3*3*N_FILTERS_128; k++)
+                {
+                    conv = conv + (window_layer2[k] * weights_conv3_layer2[k + 3*3*N_FILTERS_128*filter]);
+                }
+
+                output3[filter*(DIM_4+2)*(DIM_4+2) + (i+1)*DIM_4 + (j+1)] = conv;
+            }
+        }
     }
-*/
+
+    for(int n = 0; n < (DIM_4+2)*(DIM_4+2)*N_FILTERS_256; n++)
+    {
+        output4[n] = input[n] + output4[n];
+    }
 }
 
 void init_weights_conv5()
@@ -618,13 +731,20 @@ int main(int argc, const char * argv[])
 
     zero_padding_conv1(picture);
     conv1_layer();
+    
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
-    conv2_layer();
+    conv2_layer(pooling_conv2);
     zero_padding_conv3();
-    //conv3_layer();
-    //zero_padding_conv4();
+    conv2_layer(output2);
+    
+    zero_padding_conv3();
+    conv3_layer(output2, 2);
+    zero_padding_conv4();
+    conv3_layer(output3, 1);
+
+    zero_padding_conv4();
     //conv4_layer();
     //zero_padding_conv5();
     //conv5_layer();

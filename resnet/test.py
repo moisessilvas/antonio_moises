@@ -20,19 +20,40 @@ traingen = datagen.flow_from_directory(
     batch_size=1,
     target_size=(224,224))
 
-print(traingen)
+inputs = layers.Input(shape=(224, 224, 1))
+x = layers.ZeroPadding2D((3,3))(inputs)
+x = layers.Conv2D(64, (7, 7), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.ZeroPadding2D((1,1))(x)
+x = layers.MaxPooling2D((3, 3), strides=(2,2), padding='valid')(x)
+x1 = layers.ZeroPadding2D((1,1))(x)
+x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x1)
+x = layers.ZeroPadding2D((1,1))(x)
+x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x2 = layers.ZeroPadding2D((1,1))(x)
+added = layers.add([x1,x2])
+flat = layers.Flatten()(added)
+output = layers.Dense(1, kernel_initializer='ones', use_bias=False)(flat)
+model = models.Model(inputs=inputs, outputs=output)
 
+'''
 model = models.Sequential()
 model.add(layers.Input(shape=(224, 224, 1)))
 model.add(layers.ZeroPadding2D((3,3)))
 model.add(layers.Conv2D(64, (7, 7), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False))
 model.add(layers.ZeroPadding2D((1,1)))
 model.add(layers.MaxPooling2D((3, 3), strides=(2,2), padding='valid'))
+x = layers.ZeroPadding2D((1,1))
+model.add(x)
+model.add(layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False))
 model.add(layers.ZeroPadding2D((1,1)))
 model.add(layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False))
+y = layers.ZeroPadding2D((1,1))
+model.add(y)
+model.add([x,y])
 model.add(layers.Flatten())
 model.add(layers.Dense(1, kernel_initializer='ones', use_bias=False))
 
+'''
 model.compile(loss="binary_crossentropy", optimizer='adam')
 model.fit(traingen, epochs=1, steps_per_epoch=1)
 
