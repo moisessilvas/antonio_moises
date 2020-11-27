@@ -789,7 +789,7 @@ void conv5_layer(float input[], bool first_conv)
 
     if(first_conv)
     {
-        dim = DIM_3;
+        dim = DIM_4;
         filter_size = N_FILTERS_256;
         stride = 2;
     } 
@@ -798,7 +798,9 @@ void conv5_layer(float input[], bool first_conv)
     float conv;
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_512];
-    static float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+    
+    float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+    float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
     
     for(filter = 0; filter < N_FILTERS_512; filter++)
     {
@@ -827,14 +829,14 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv5_layer1a[k + 3*3*N_FILTERS_256*filter]);
+                        conv = conv + (window_layer1[k] * weights_conv5_layer1a[k*filter]);
                     }
                 }
                 else
                 {
-                    for(int k = 0; k < 3*3*N_FILTERS_256; k++)
+                    for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv5_layer1b[k + 3*3*N_FILTERS_512*filter]);
+                        conv = conv + (window_layer1[k] * weights_conv5_layer1b[k*filter]);
                     }
                 }
                 
@@ -870,25 +872,25 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv4_layer2a[k + 3*3*N_FILTERS_512*filter]);
+                        conv = conv + (window_layer2[k] * weights_conv4_layer2a[k*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv4_layer2b[k + 3*3*N_FILTERS_512*filter]);
+                        conv = conv + (window_layer2[k] * weights_conv4_layer2b[k*filter]);
                     }
                 }
                 
-                output5[filter*(DIM_5+2)*(DIM_5+2) + (i+1)*(DIM_5+2) + (j+1)] = conv;
+                output5_temp2[filter*(DIM_5+2)*(DIM_5+2) + (i+1)*(DIM_5+2) + (j+1)] = conv;
             }
         }
     }
 
     for(int n = 0; n < (DIM_5+2)*(DIM_5+2)*N_FILTERS_512; n++)
     {
-        output5[n] = input[n] + output5[n];
+        output5[n] = input[n] + output5_temp2[n];
     }
 }
 
