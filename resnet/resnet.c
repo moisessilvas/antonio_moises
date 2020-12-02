@@ -25,6 +25,9 @@ static float shortcut4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 static float shortcut5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 
+//float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+//float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+
 static float weights_conv1[N_FILTERS_64*7*7];
 
 static float weights_conv2_layer1a[N_FILTERS_64*3*3*N_FILTERS_64];
@@ -326,7 +329,7 @@ void conv2_layer(float input[], bool first_conv)
     float conv;
     float window_layer1[3*3*N_FILTERS_64];
     float window_layer2[3*3*N_FILTERS_64];
-
+    
     float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
     float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
     
@@ -436,6 +439,11 @@ void init_weights_conv3()
         weights_conv3_layer1b[i] = 1.0f;
         weights_conv3_layer2b[i] = 1.0f;
     }
+
+    for(int i = 0; i < N_FILTERS_128*N_FILTERS_64; i++)
+    {
+        weights_conv3_shortcut[i] =1.0f;
+    }
 }
 
 void zero_padding_conv3()
@@ -450,8 +458,15 @@ void zero_padding_conv3()
                 if(i < 1) 
                 {
                     output2[i*(DIM_2+2) + j] = 0;
+                    //output2_temp[i*(DIM_2+2) + j] = 0;
+                    //output2_temp2[i*(DIM_2+2) + j] = 0;
                 }
-                else output2[(i+DIM_2)*(DIM_2+2) + j] = 0;
+                else 
+                {
+                    output2[(i+DIM_2)*(DIM_2+2) + j] = 0;
+                    //output2_temp[(i+DIM_2)*(DIM_2+2) + j] = 0;
+                    //output2_temp2[(i+DIM_2)*(DIM_2+2) + j] = 0;
+                }
             }
         }
 
@@ -463,8 +478,15 @@ void zero_padding_conv3()
                 if(j < 1) 
                 {
                     output2[i*(DIM_2 + 2)] = 0;
+                    //output2_temp[i*(DIM_2 + 2)] = 0;
+                    //output2_temp2[i*(DIM_2 + 2)] = 0;
                 }
-                else output2[(i+1)*(DIM_2 + 2) - 1] = 0;
+                else
+                {
+                    output2[(i+1)*(DIM_2 + 2) - 1] = 0;
+                    //output2_temp[(i+1)*(DIM_2 + 2) - 1] = 0;
+                    //output2_temp2[(i+1)*(DIM_2 + 2) - 1] = 0;
+                }
             }
         }
     }
@@ -483,7 +505,7 @@ void conv3_shortcut()
             {
                 for (int depth = 0; depth < N_FILTERS_64; depth++)
                 {
-                    window[depth] = output2[i*(DIM_2+2) + j + depth*(DIM_2+2)*(DIM_2+2)];
+                    window[depth] = output2[(i+1)*(DIM_2+2) + (j+1) + depth*(DIM_2+2)*(DIM_2+2)];
                 }
 
                 conv = 0.0f;
@@ -493,7 +515,7 @@ void conv3_shortcut()
                     conv = conv + (window[k] * weights_conv3_shortcut[k + filter*N_FILTERS_64]);
                 }
 
-                shortcut3[filter*(DIM_3+2)*(DIM_3+2) + (i/2 + 1)*(DIM_3+2) + (j/2 + 1)] = conv
+                shortcut3[filter*(DIM_3+2)*(DIM_3+2) + (i/2 + 1)*(DIM_3+2) + (j/2 + 1)] = conv;
             }
         }
     }
@@ -607,10 +629,21 @@ void conv3_layer(float input[], bool first_conv)
         }
     }
 
-    for(int n = 0; n < (DIM_3+2)*(DIM_3+2)*N_FILTERS_128; n++)
+    if(first_conv)
     {
-        output3[n] = shortcut3[n] + output3_temp2[n];
+        for(int n = 0; n < (DIM_3+2)*(DIM_3+2)*N_FILTERS_128; n++)
+        {
+            output3[n] = shortcut3[n] + output3_temp2[n];
+        }
     }
+    else
+    {
+        for(int n = 0; n < (DIM_3+2)*(DIM_3+2)*N_FILTERS_128; n++)
+        {
+            output3[n] = input[n] + output3_temp2[n];
+        }
+    }
+    
 }
 
 void init_weights_conv4()
@@ -623,13 +656,13 @@ void init_weights_conv4()
 
     for(int i = 0; i < N_FILTERS_256*3*3*N_FILTERS_256; i++)
     {
-        weights_conv3_layer2a[i] = 1.0f;
-        weights_conv3_layer1b[i] = 1.0f;
-        weights_conv3_layer2b[i] = 1.0f;
+        weights_conv5_layer2a[i] = 1.0f;
+        weights_conv5_layer1b[i] = 1.0f;
+        weights_conv5_layer2b[i] = 1.0f;
     }
 }
 
-void zero_padding_conv4()
+void zero_padding_conv4(float input[])
 {
     for(int count = 0; count < 128; count = count + 1)
     {    
@@ -640,9 +673,9 @@ void zero_padding_conv4()
             {
                 if(i < 1) 
                 {
-                    output3[i*(DIM_3+2) + j] = 0;
+                    input[i*(DIM_3+2) + j] = 0;
                 }
-                else output3[(i+DIM_3)*(DIM_3+2) + j] = 0;
+                else input[(i+DIM_3)*(DIM_3+2) + j] = 0;
             }
         }
 
@@ -653,9 +686,9 @@ void zero_padding_conv4()
             {
                 if(j < 1) 
                 {
-                    output3[i*(DIM_3 + 2)] = 0;
+                    input[i*(DIM_3 + 2)] = 0;
                 }
-                else output3[(i+1)*(DIM_3 + 2) - 1] = 0;
+                else input[(i+1)*(DIM_3 + 2) - 1] = 0;
             }
         }
     }
@@ -684,7 +717,7 @@ void conv4_shortcut()
                     conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
                 }
 
-                shortcut4[filter*(DIM_4+2)*(DIM_4+2) + (i/2 + 1)*(DIM_4+2) + (j/2 + 1)] = conv
+                shortcut4[filter*(DIM_4+2)*(DIM_4+2) + (i/2 + 1)*(DIM_4+2) + (j/2 + 1)] = conv;
             }
         }
     }
@@ -806,10 +839,17 @@ void conv4_layer(float input[], bool first_conv)
 
 void init_weights_conv5()
 {
-    for(int i = 0; i < N_FILTERS_512*3*3; i++)
+    for(int i = 0; i < N_FILTERS_512*3*3*N_FILTERS_256; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv5[i] = 1;
+        weights_conv5_layer1a[i] = 1.0f;
+    }
+
+    for(int i = 0; i < N_FILTERS_512*3*3*N_FILTERS_512; i++)
+    {
+        weights_conv5_layer2a[i] = 1.0f;
+        weights_conv5_layer1b[i] = 1.0f;
+        weights_conv5_layer2b[i] = 1.0f;
     }
 }
 
@@ -868,7 +908,7 @@ void conv5_shortcut()
                     conv = conv + (window[k] * weights_conv5_shortcut[k + filter*N_FILTERS_64]);
                 }
 
-                shortcut5[filter*(DIM_5+2)*(DIM_5+2) + (i/2 + 1)*(DIM_5+2) + (j/2 + 1)] = conv
+                shortcut5[filter*(DIM_5+2)*(DIM_5+2) + (i/2 + 1)*(DIM_5+2) + (j/2 + 1)] = conv;
             }
         }
     }
@@ -1002,20 +1042,22 @@ int main(int argc, const char * argv[])
 
     zero_padding_conv1(picture);
     conv1_layer();
-    
+    zero_padding_conv3();
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
     conv2_layer(pooling_conv2, 1);
     zero_padding_conv3();
-    conv2_layer(output2, 0);
+    //conv2_layer(output2, 0);
     
-    zero_padding_conv3();
+    //zero_padding_conv4(shortcut3);
+    //conv3_shortcut();
+    //zero_padding_conv3();
     //conv3_layer(output2, 1);
-    //zero_padding_conv4();
+    //zero_padding_conv4(output3);
     //conv3_layer(output3, 0);
 
-    //zero_padding_conv4();
+    //zero_padding_conv4(output3);
     //conv4_layer();
     //zero_padding_conv5();
     //conv5_layer();
