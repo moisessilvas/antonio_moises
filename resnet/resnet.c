@@ -661,6 +661,36 @@ void zero_padding_conv4()
     }
 }
 
+void conv4_shortcut()
+{
+    float conv;
+    float window[N_FILTERS_128];
+
+    for(int filter = 0; filter < N_FILTERS_256; filter++)
+    {
+        for(int i = 0; i < DIM_3; i = i + 2)
+        {
+            for(int j = 0; j < DIM_3; j = j + 2)
+            {
+                for (int depth = 0; depth < N_FILTERS_128; depth++)
+                {
+                    window[depth] = output3[i*(DIM_3+2) + j + depth*(DIM_3+2)*(DIM_3+2)];
+                }
+
+                conv = 0.0f;
+
+                for(int k = 0; k < N_FILTERS_128; k++)
+                {
+                    conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
+                }
+
+                shortcut4[filter*(DIM_4+2)*(DIM_4+2) + (i/2 + 1)*(DIM_4+2) + (j/2 + 1)] = conv
+            }
+        }
+    }
+
+}
+
 void conv4_layer(float input[], bool first_conv)
 {
     int dim = DIM_4; 
@@ -810,6 +840,35 @@ void zero_padding_conv5()
                     output4[i*(DIM_4 + 2)] = 0;
                 }
                 else output4[(i+1)*(DIM_4 + 2) - 1] = 0;
+            }
+        }
+    }
+}
+
+void conv5_shortcut()
+{
+    float conv;
+    float window[N_FILTERS_256];
+
+    for(int filter = 0; filter < N_FILTERS_512; filter++)
+    {
+        for(int i = 0; i < DIM_4; i = i + 2)
+        {
+            for(int j = 0; j < DIM_4; j = j + 2)
+            {
+                for (int depth = 0; depth < N_FILTERS_256; depth++)
+                {
+                    window[depth] = output2[i*(DIM_4+2) + j + depth*(DIM_4+2)*(DIM_4+2)];
+                }
+
+                conv = 0.0f;
+
+                for(int k = 0; k < N_FILTERS_256; k++)
+                {
+                    conv = conv + (window[k] * weights_conv5_shortcut[k + filter*N_FILTERS_64]);
+                }
+
+                shortcut5[filter*(DIM_5+2)*(DIM_5+2) + (i/2 + 1)*(DIM_5+2) + (j/2 + 1)] = conv
             }
         }
     }
