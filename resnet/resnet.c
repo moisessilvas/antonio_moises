@@ -25,8 +25,14 @@ static float shortcut4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 static float shortcut5[(DIM_5)*(DIM_5)*N_FILTERS_512];
 
-//float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-//float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+float output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
 
 static float weights_conv1[N_FILTERS_64*7*7];
 
@@ -330,8 +336,8 @@ void conv2_layer(float input[], bool first_conv)
     float window_layer1[3*3*N_FILTERS_64];
     float window_layer2[3*3*N_FILTERS_64];
     
-    float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-    float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+    //float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+    //float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
@@ -540,8 +546,8 @@ void conv3_layer(float input[], bool first_conv)
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_128];
     
-    float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-    float output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+    //float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+    //float output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
     
     for(filter = 0; filter < N_FILTERS_128; filter++)
     {
@@ -742,8 +748,8 @@ void conv4_layer(float input[], bool first_conv)
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_256];
     
-    float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-    float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+    //float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+    //float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
     
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
@@ -932,8 +938,8 @@ void conv5_layer(float input[], bool first_conv)
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_512];
     
-    float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-    float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+    //float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+    //float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
     
     for(filter = 0; filter < N_FILTERS_512; filter++)
     {
@@ -1032,7 +1038,7 @@ int main(int argc, const char * argv[])
     FILE *picture;
     float dense = 0.0f;
     
-    picture = fopen("/home/aluno/Documents/TCC/figura2.pnm", "rb");
+    picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
 
     init_weights_conv1();
     init_weights_conv2();
@@ -1042,7 +1048,6 @@ int main(int argc, const char * argv[])
 
     zero_padding_conv1(picture);
     conv1_layer();
-    zero_padding_conv3();
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
@@ -1065,6 +1070,7 @@ int main(int argc, const char * argv[])
     for(int id = 0; id < (DIM_2+2)*(DIM_2+2)*N_FILTERS_64; id++)
     {
         dense = dense + output2[id];
+        //printf("%f ", output2[id]);
     }
 
     printf("%f\n", dense);
