@@ -22,8 +22,8 @@ static float output3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
 static float shortcut3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
 static float output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 static float shortcut4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-static float output5[(DIM_5)*(DIM_5)*N_FILTERS_512];
-static float shortcut5[(DIM_5)*(DIM_5)*N_FILTERS_512];
+static float output5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+static float shortcut5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
 
 float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
@@ -33,6 +33,7 @@ float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
 float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
 float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+float output_average[N_FILTERS_512];
 
 static float weights_conv1[N_FILTERS_64*7*7];
 
@@ -60,6 +61,19 @@ static float weights_conv5_layer2b[N_FILTERS_512*3*3*N_FILTERS_512];
 static float weights_conv5_shortcut[N_FILTERS_512*N_FILTERS_256];
 
 static float pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+
+void relu(float data[])
+{
+    int data_size = sizeof(data)/sizeof(data[0]);
+
+    for(int i = 0; i < data_size; i++)
+    {
+        if(data[i] < 0)
+        {
+            data[i] = 0;
+        }
+    }
+}
 
 void init_weights_conv1()
 {
@@ -1030,6 +1044,32 @@ void conv5_layer(float input[], bool first_conv)
     for(int n = 0; n < (DIM_5+2)*(DIM_5+2)*N_FILTERS_512; n++)
     {
         output5[n] = input[n] + output5_temp2[n];
+    }
+}
+
+void average_layer()
+{
+    float nums[DIM_5*DIM_5];
+    float result;
+
+    for(int filter = 0; filter < N_FILTERS_512; filter++)
+    {
+        for(int i = 0; i < 7; i++)
+        {
+            for(int j = 0; j < 7; j++)
+            {
+                nums[(i+1)*(DIM_5+2) + (j+1)] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
+            }
+        }
+
+        result = 0;
+
+        for(int k = 0; k < DIM_5*DIM_5; k++)
+        {
+            result = result + (nums[k]/DIM_5*DIM_5);
+        }
+
+        output_average[filter] = result;
     }
 }
 
