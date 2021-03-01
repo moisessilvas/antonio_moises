@@ -34,15 +34,14 @@ x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bi
 x = layers.ZeroPadding2D((1,1))(x)
 x2 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
 added = layers.add([x1,x2])
-'''
 x = layers.ZeroPadding2D((1,1))(added)
 x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
 x = layers.ZeroPadding2D((1,1))(x)
 x3 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
 added = layers.add([added,x3])
-'''
+
 # Layer 3
-'''
+
 sc = layers.Conv2D(128, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
 x = layers.ZeroPadding2D((1, 1))(added)
 x = layers.Conv2D(128, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
@@ -55,7 +54,37 @@ x = layers.ZeroPadding2D((1,1))(x)
 x3 = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
 added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
-'''
+
+# Layer 4
+
+sc = layers.Conv2D(256, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
+x = layers.ZeroPadding2D((1, 1))(added)
+x = layers.Conv2D(256, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.ZeroPadding2D((1,1))(x)
+x2 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+added = layers.add([sc,x2])
+x = layers.ZeroPadding2D((1,1))(added)
+x = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.ZeroPadding2D((1,1))(x)
+x3 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+added = layers.add([added,x3])
+x = layers.ZeroPadding2D((1,1))(added)
+
+# Layer 5
+
+sc = layers.Conv2D(512, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
+x = layers.ZeroPadding2D((1, 1))(added)
+x = layers.Conv2D(512, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.ZeroPadding2D((1,1))(x)
+x2 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+added = layers.add([sc,x2])
+x = layers.ZeroPadding2D((1,1))(added)
+x = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.ZeroPadding2D((1,1))(x)
+x3 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+added = layers.add([added,x3])
+x = layers.ZeroPadding2D((1,1))(added)
+
 flat = layers.Flatten()(added)
 output = layers.Dense(1, kernel_initializer='ones', use_bias=False)(flat)
 model = models.Model(inputs=inputs, outputs=output)
@@ -65,6 +94,6 @@ model.fit(traingen, epochs=1, steps_per_epoch=1)
 
 model.summary()
 
-model.save("model.h5")
+model.save_weights("weights.h5")
 out = model.predict(traingen)
 print(out)
