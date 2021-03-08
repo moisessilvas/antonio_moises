@@ -94,6 +94,35 @@ model.fit(traingen, epochs=1, steps_per_epoch=1)
 
 model.summary()
 
-model.save_weights("weights.h5")
+w_file = open("weights.txt", "w")
+
+for n, layer in enumerate(model.layers):
+    weights = layer.get_weights()
+    
+    if len(weights) is not 0:
+        w_file.write("array\n")
+
+        for line in weights:
+            for column in line:
+                try:
+                    for deepness in column:
+                        for conv_filter in deepness:
+                            for element in conv_filter:
+                                w_file.write(str(element) + "*")
+                except:
+                    for element in column:
+                        w_file.write(str(element) + "*")
+            '''
+            print("1º array:", len(line))
+            print("2º array:", len(line[0]))
+            print("3º array:", len(line[0][0]))
+            print("4º array:", len(line[0][0][0]))
+            print("4º array:", line[0][0][0][0])
+            print("------------------------------------------")
+            '''
+        
+        w_file.write("\n")
+
+#model.save_weights("weights.h5")
 out = model.predict(traingen)
 print(out)

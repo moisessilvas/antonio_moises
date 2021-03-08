@@ -75,7 +75,7 @@ void relu(float data[])
     }
 }
 
-void init_weights_conv1()
+void init_weights_conv1(FILE* weights)
 {
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
@@ -1075,12 +1075,13 @@ void average_layer()
 
 int main(int argc, const char * argv[])
 {
-    FILE *picture;
+    FILE *picture, *weights;
     float dense = 0.0f;
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
+    weights = fopen("/home/antonio/Documentos/tcc/antonio_moises/resnet/weights.txt", "r");
 
-    init_weights_conv1();
+    init_weights_conv1(weights);
     init_weights_conv2();
     //init_weights_conv3();
     //init_weights_conv4();
