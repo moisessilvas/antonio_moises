@@ -17,6 +17,20 @@ int lerLinha(char *pesos, int linha){
     return 0;
 }
 
+void divideString(char *str, int n) 
+{ 
+    int str_size = strlen(str); 
+    int i; 
+    int part_size; 
+  
+    part_size = str_size / n; 
+    for (i = 0; i< str_size; i++){ 
+        if (i % part_size == 0) 
+            printf("\n");  
+            printf("%c", str[i]); 
+    } 
+} 
+
 int main(){
     //leitura de uma linha específica
     char weight[28762];
@@ -26,17 +40,38 @@ int main(){
 
     //manipulação dessa linha
     int i, j;
+    int a = 0;
     j = strlen(weight);
+
+    //array que terá os pesos
     char conv[j];
+
+    //intermediário que transformará a string recebida em double
+    char conv_middle[j];
+
+    //for que percorre a linha
     for (int i = 0; i < j; i++) {
+
+        //condição de encontro de caracter especial
         if (weight[i] == '*') {
+            //conta quantos * possui a string
+            ++a;
             for (int k = i; k < j; k++) {
-                weight[k] = weight[k + 1]; //retira o índice *
+                //retira o índice *
+                weight[k] = weight[k + 1];
+                
             }
         }
-        conv[i] = weight[i];
-        double x = atof(conv); //converter em double o número recebido
+        conv_middle[i] = weight[i];
     }
-    puts(conv);
+    char *str = conv_middle;
+    divideString(str, a);
+
+    //converter em double o número recebido
+    double x;
+    sscanf(str, "%lf", &x);
+    
+    //strcpy(conv,str);
+    //puts(conv);
     return 0;
 }
