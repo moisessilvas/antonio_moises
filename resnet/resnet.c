@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
+#include <string.h>
+ 
 #define N_FILTERS_64 64
 #define N_FILTERS_128 128
 #define N_FILTERS_256 256
@@ -62,6 +63,7 @@ static float weights_conv5_shortcut[N_FILTERS_512*N_FILTERS_256];
 
 static float pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 
+/*
 void relu(float data[])
 {
     int data_size = sizeof(data)/sizeof(data[0]);
@@ -73,14 +75,37 @@ void relu(float data[])
             data[i] = 0;
         }
     }
-}
+}*/
 
 void init_weights_conv1(FILE* weights)
-{
+{   
+    char number[50];
+    memset(number,0,sizeof number);
+    int c, count = 0, weight_count = 0;
+    float x;
+    do {
+        c = fgetc(weights);
+
+        if( feof(weights) || c == '\n') break;
+        else if(c == '*'){
+            x = atof(number);
+            if(weight_count < N_FILTERS_64*7*7){
+                weights_conv1[weight_count] = x;
+                weight_count++;
+            }
+            memset(number,0,sizeof number);
+            count = 0;
+        }
+        else{
+            number[count] = c;
+            count++;
+        }
+    }while(1);
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv1[i] = 1.0f;
+        //weights_conv1[i] = 1.0f;
+        printf("%f\n", weights_conv1[i]);
     }
 }
 
@@ -1078,8 +1103,8 @@ int main(int argc, const char * argv[])
     FILE *picture, *weights;
     float dense = 0.0f;
     
-    picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
-    weights = fopen("/home/antonio/Documentos/tcc/antonio_moises/resnet/weights.txt", "r");
+    picture = fopen("/home/aluno/TCC/antonio_moises-master/Grayscale.pnm", "rb");
+    weights = fopen("weights.txt", "r");
 
     init_weights_conv1(weights);
     init_weights_conv2();
