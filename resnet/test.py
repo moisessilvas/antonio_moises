@@ -24,64 +24,64 @@ inputs = layers.Input(shape=(224, 224, 1))
 
 # Layer 1
 x = layers.ZeroPadding2D((3,3))(inputs)
-x = layers.Conv2D(64, (7, 7), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(64, (7, 7), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv1')(x)
 
 # Layer 2
 x = layers.ZeroPadding2D((1,1))(x)
 x1 = layers.MaxPooling2D((3, 3), strides=(2,2), padding='valid')(x)
 x = layers.ZeroPadding2D((1,1))(x1)
-x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv2_1a')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x2 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x2 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv2_2a')(x)
 added = layers.add([x1,x2])
 x = layers.ZeroPadding2D((1,1))(added)
-x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv2_1b')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x3 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x3 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv2_2b')(x)
 added = layers.add([added,x3])
 
 # Layer 3
 
-sc = layers.Conv2D(128, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
+sc = layers.Conv2D(128, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut3')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
-x = layers.Conv2D(128, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(128, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_1a')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x2 = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x2 = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_2a')(x)
 added = layers.add([sc,x2])
 x = layers.ZeroPadding2D((1,1))(added)
-x = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_1b')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x3 = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x3 = layers.Conv2D(128, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_2b')(x)
 added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
 
 # Layer 4
 
-sc = layers.Conv2D(256, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
+sc = layers.Conv2D(256, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut4')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
-x = layers.Conv2D(256, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(256, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv4_1a')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x2 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x2 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv4_2a')(x)
 added = layers.add([sc,x2])
 x = layers.ZeroPadding2D((1,1))(added)
-x = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv4_1b')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x3 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x3 = layers.Conv2D(256, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv4_2b')(x)
 added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
 
 # Layer 5
 
-sc = layers.Conv2D(512, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(added)
+sc = layers.Conv2D(512, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut5')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
-x = layers.Conv2D(512, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(512, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv5_1a')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x2 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x2 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv5_2a')(x)
 added = layers.add([sc,x2])
 x = layers.ZeroPadding2D((1,1))(added)
-x = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv5_1b')(x)
 x = layers.ZeroPadding2D((1,1))(x)
-x3 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False)(x)
+x3 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv5_2b')(x)
 added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
 
@@ -100,7 +100,6 @@ for n, layer in enumerate(model.layers):
     weights = layer.get_weights()
     
     if len(weights) is not 0:
-        w_file.write("array\n")
 
         for line in weights:
             for column in line:

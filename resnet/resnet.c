@@ -80,33 +80,41 @@ void relu(float data[])
 void init_weights_conv1(FILE* weights)
 {   
     char number[50];
-    memset(number,0,sizeof number);
     int c, count = 0, weight_count = 0;
     float x;
+
+    memset(number, 0, sizeof number);
+
     do {
         c = fgetc(weights);
 
-        if( feof(weights) || c == '\n') break;
-        else if(c == '*'){
+        if(feof(weights) || c == '\n') break;
+        else if(c == '*')
+        {
             x = atof(number);
-            if(weight_count < N_FILTERS_64*7*7){
+
+            if(weight_count < N_FILTERS_64*7*7)
+            {
                 weights_conv1[weight_count] = x;
                 weight_count++;
             }
-            memset(number,0,sizeof number);
+
+            memset(number, 0, sizeof number);
             count = 0;
         }
-        else{
+        else
+        {
             number[count] = c;
             count++;
         }
-    }while(1);
+    } while(1);
+    /*
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
         // filters[i] = rand()/RAND_MAX;
         //weights_conv1[i] = 1.0f;
         printf("%f\n", weights_conv1[i]);
-    }
+    }*/
 }
 
 void zero_padding_conv1(FILE* picture)
@@ -253,16 +261,55 @@ void conv1_layer()
 */
 }
 
-void init_weights_conv2()
+void init_weights_conv2(FILE* weights)
 {
+    char number[50];
+    int c, count = 0, weight_count = 0, line_count = 0;
+    float x;
+
+    memset(number, 0, sizeof number);
+
+    do {
+        c = fgetc(weights);
+
+        if(feof(weights) || line_count == 5) break;
+        else if(c == '\n')
+        {
+            line_count++;
+            weight_count = 0;
+        }
+        else if(c == '*')
+        {
+            x = atof(number);
+
+            if(weight_count < N_FILTERS_64*3*3*N_FILTERS_64)
+            {
+                if(line_count == 1) weights_conv2_layer1a[weight_count] = x;
+                else if(line_count == 2) weights_conv2_layer2a[weight_count] = x;
+                else if(line_count == 3) weights_conv2_layer1b[weight_count] = x;
+                else if(line_count == 4) weights_conv2_layer2b[weight_count] = x;
+
+                weight_count++;
+            }
+
+            memset(number, 0, sizeof number);
+            count = 0;
+        }
+        else
+        {
+            number[count] = c;
+            count++;
+        }
+    } while(1);
+    /*
     for(int i = 0; i < N_FILTERS_64*3*3*N_FILTERS_64; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv2_layer1a[i] = 1.0f;
-        weights_conv2_layer2a[i] = 1.0f;
-        weights_conv2_layer1b[i] = 1.0f;
-        weights_conv2_layer2b[i] = 1.0f;
-    }
+        printf("%f\n", weights_conv2_layer1a[i]);
+        printf("%f\n", weights_conv2_layer2a[i]);
+        printf("%f\n", weights_conv2_layer1b[i]);
+        printf("%f\n", weights_conv2_layer2b[i]);
+    }*/
 }
 
 void zero_padding_pool_conv2()
@@ -470,24 +517,68 @@ void conv2_layer(float input[], bool first_conv)
     }
 }
 
-void init_weights_conv3()
+void init_weights_conv3(FILE* weights)
 {
+    char number[50];
+    int c, count = 0, weight_count = 0, line_count = 0;
+    float x;
+
+    memset(number, 0, sizeof number);
+
+    do {
+        c = fgetc(weights);
+
+        if(feof(weights) || line_count == 10) break;
+        else if(c == '\n')
+        {
+            line_count++;
+            weight_count = 0;
+        }
+        else if(c == '*')
+        {
+            x = atof(number);
+
+            if(weight_count < N_FILTERS_128*3*3*N_FILTERS_128)
+            {
+                if(line_count == 5) weights_conv3_layer1a[weight_count] = x;
+                else if(line_count == 6) weights_conv3_shortcut[weight_count] = x;
+                else if(line_count == 7) weights_conv3_layer2a[weight_count] = x;
+                else if(line_count == 8) weights_conv3_layer1b[weight_count] = x;
+                else if(line_count == 9) weights_conv3_layer2b[weight_count] = x;
+
+                weight_count++;
+            }
+
+            memset(number, 0, sizeof number);
+            count = 0;
+        }
+        else
+        {
+            number[count] = c;
+            count++;
+        }
+    } while(1);
+    
     for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_64; i++)
     {
         // filters[i] = rand()/RAND_MAX;
-        weights_conv3_layer1a[i] = 1.0f;
+        if(weights_conv3_layer1a[i] == 0){
+            printf("%f\n", weights_conv3_layer1a[i]);}
     }
 
     for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_128; i++)
     {
-        weights_conv3_layer2a[i] = 1.0f;
-        weights_conv3_layer1b[i] = 1.0f;
-        weights_conv3_layer2b[i] = 1.0f;
+        if(weights_conv3_layer1a[i] == 0){
+            printf("%f\n", weights_conv3_layer2a[i]);
+            printf("%f\n", weights_conv3_layer1b[i]);
+            printf("%f\n", weights_conv3_layer2b[i]);}
     }
 
     for(int i = 0; i < N_FILTERS_128*N_FILTERS_64; i++)
     {
-        weights_conv3_shortcut[i] =1.0f;
+        if(weights_conv3_shortcut[i] == 0){
+            printf("%f\n", weights_conv3_shortcut[i]);
+        }
     }
 }
 
@@ -691,8 +782,48 @@ void conv3_layer(float input[], bool first_conv)
     
 }
 
-void init_weights_conv4()
+void init_weights_conv4(FILE* weights)
 {
+    char number[50];
+    int c, count = 0, weight_count = 0, line_count = 0;
+    float x;
+
+    memset(number, 0, sizeof number);
+
+    do {
+        c = fgetc(weights);
+
+        if(feof(weights) || line_count == 15) break;
+        else if(c == '\n')
+        {
+            line_count++;
+            weight_count = 0;
+        }
+        else if(c == '*')
+        {
+            x = atof(number);
+
+            if(weight_count < N_FILTERS_256*3*3*N_FILTERS_256)
+            {
+                if(line_count == 10) weights_conv4_layer1a[weight_count] = x;
+                else if(line_count == 11) weights_conv4_shortcut[weight_count] = x;
+                else if(line_count == 12) weights_conv4_layer2a[weight_count] = x;
+                else if(line_count == 13) weights_conv4_layer1b[weight_count] = x;
+                else if(line_count == 14) weights_conv4_layer2b[weight_count] = x;
+
+                weight_count++;
+            }
+
+            memset(number, 0, sizeof number);
+            count = 0;
+        }
+        else
+        {
+            number[count] = c;
+            count++;
+        }
+    } while(1);
+    /*
     for(int i = 0; i < N_FILTERS_256*3*3*N_FILTERS_128; i++)
     {
         // filters[i] = rand()/RAND_MAX;
@@ -704,7 +835,7 @@ void init_weights_conv4()
         weights_conv5_layer2a[i] = 1.0f;
         weights_conv5_layer1b[i] = 1.0f;
         weights_conv5_layer2b[i] = 1.0f;
-    }
+    }*/
 }
 
 void zero_padding_conv4(float input[])
@@ -882,8 +1013,48 @@ void conv4_layer(float input[], bool first_conv)
     }
 }
 
-void init_weights_conv5()
+void init_weights_conv5(FILE* weights)
 {
+    char number[50];
+    int c, count = 0, weight_count = 0, line_count = 0;
+    float x;
+
+    memset(number, 0, sizeof number);
+
+    do {
+        c = fgetc(weights);
+
+        if(feof(weights) || line_count == 20) break;
+        else if(c == '\n')
+        {
+            line_count++;
+            weight_count = 0;
+        }
+        else if(c == '*')
+        {
+            x = atof(number);
+
+            if(weight_count < N_FILTERS_128*3*3*N_FILTERS_128)
+            {
+                if(line_count == 15) weights_conv5_layer1a[weight_count] = x;
+                else if(line_count == 16) weights_conv5_shortcut[weight_count] = x;
+                else if(line_count == 17) weights_conv5_layer2a[weight_count] = x;
+                else if(line_count == 18) weights_conv5_layer1b[weight_count] = x;
+                else if(line_count == 19) weights_conv5_layer2b[weight_count] = x;
+
+                weight_count++;
+            }
+
+            memset(number, 0, sizeof number);
+            count = 0;
+        }
+        else
+        {
+            number[count] = c;
+            count++;
+        }
+    } while(1);
+    /*
     for(int i = 0; i < N_FILTERS_512*3*3*N_FILTERS_256; i++)
     {
         // filters[i] = rand()/RAND_MAX;
@@ -895,7 +1066,7 @@ void init_weights_conv5()
         weights_conv5_layer2a[i] = 1.0f;
         weights_conv5_layer1b[i] = 1.0f;
         weights_conv5_layer2b[i] = 1.0f;
-    }
+    }*/
 }
 
 void zero_padding_conv5()
@@ -1083,7 +1254,7 @@ void average_layer()
         {
             for(int j = 0; j < 7; j++)
             {
-                nums[(i+1)*(DIM_5+2) + (j+1)] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
+                nums[(i+1)*DIM_5 + (j+1)] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
             }
         }
 
@@ -1103,11 +1274,11 @@ int main(int argc, const char * argv[])
     FILE *picture, *weights;
     float dense = 0.0f;
     
-    picture = fopen("/home/aluno/TCC/antonio_moises-master/Grayscale.pnm", "rb");
+    picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
     weights = fopen("weights.txt", "r");
 
     init_weights_conv1(weights);
-    init_weights_conv2();
+    init_weights_conv2(weights);
     //init_weights_conv3();
     //init_weights_conv4();
     //init_weights_conv5();
