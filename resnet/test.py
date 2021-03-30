@@ -41,7 +41,7 @@ x3 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_b
 added = layers.add([added,x3])
 
 # Layer 3
-
+'''
 sc = layers.Conv2D(128, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut3')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
 x = layers.Conv2D(128, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_1a')(x)
@@ -84,7 +84,10 @@ x = layers.ZeroPadding2D((1,1))(x)
 x3 = layers.Conv2D(512, (3, 3), kernel_initializer='ones', padding='valid', use_bias=False, name='conv5_2b')(x)
 added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
-
+'''
+#flat = layers.Flatten()(added)
+#output = layers.Dense(1, kernel_initializer='ones', use_bias=False)(flat)
+#output = layers.AveragePooling2D((7,7))(x)
 flat = layers.Flatten()(added)
 output = layers.Dense(1, kernel_initializer='ones', use_bias=False)(flat)
 model = models.Model(inputs=inputs, outputs=output)
@@ -94,7 +97,7 @@ model.fit(traingen, epochs=1, steps_per_epoch=1)
 
 model.summary()
 
-w_file = open("weights.txt", "w")
+w_file = open("weights-k.txt", "w")
 
 for n, layer in enumerate(model.layers):
     weights = layer.get_weights()

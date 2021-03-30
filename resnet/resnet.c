@@ -61,6 +61,8 @@ static float weights_conv5_layer2a[N_FILTERS_512*3*3*N_FILTERS_512];
 static float weights_conv5_layer2b[N_FILTERS_512*3*3*N_FILTERS_512];
 static float weights_conv5_shortcut[N_FILTERS_512*N_FILTERS_256];
 
+static float weights_fully[N_FILTERS_512];
+
 static float pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 
 /*
@@ -558,7 +560,7 @@ void init_weights_conv3(FILE* weights)
             count++;
         }
     } while(1);
-    
+    /*
     for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_64; i++)
     {
         // filters[i] = rand()/RAND_MAX;
@@ -580,6 +582,7 @@ void init_weights_conv3(FILE* weights)
             printf("%f\n", weights_conv3_shortcut[i]);
         }
     }
+    */
 }
 
 void zero_padding_conv3()
@@ -706,7 +709,7 @@ void conv3_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*filter]);
+                        conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*N_FILTERS_64*filter]);
                     }
                 }
                 else
@@ -716,8 +719,9 @@ void conv3_layer(float input[], bool first_conv)
                         conv = conv + (window_layer1[k] * weights_conv3_layer1b[k + 3*3*N_FILTERS_128*filter]);
                     }
                 }
-                
-                output3_temp[filter*(DIM_3+2)*(DIM_3+2) + (i+1)*(DIM_3+2) + (j+1)] = conv;
+                //if((filter*(DIM_3+2)*(DIM_3+2) + (i+1)*(DIM_3+2) + (j+1)) > ((DIM_3+2)*(DIM_3+2)*N_FILTERS_128)) printf("Achei!\n");
+                //printf("%i\n", filter*(DIM_3+2)*(DIM_3+2) + ((i/stride)+1)*(DIM_3+2) + ((j/stride)+1));
+                output3_temp[filter*(DIM_3+2)*(DIM_3+2) + ((i/stride)+1)*(DIM_3+2) + ((j/stride)+1)] = conv;
             }
         }
     }
@@ -905,6 +909,7 @@ void conv4_layer(float input[], bool first_conv)
     int dim = DIM_4; 
     int filter_size = N_FILTERS_256;
     int stride = 1;
+    int a = 0;
 
     if(first_conv)
     {
@@ -959,11 +964,13 @@ void conv4_layer(float input[], bool first_conv)
                     }
                 }
                 
-                output4_temp[filter*(DIM_4+2)*(DIM_4+2) + (i+1)*(DIM_4+2) + (j+1)] = conv;
+                //if(filter*(DIM_4+2)*(DIM_4+2) + (i+1)*(DIM_4+2) + (j+1) > (DIM_4+2)*(DIM_4+2)*N_FILTERS_256) printf("Achei!\n");
+                //printf("%i\n", filter*(DIM_4+2)*(DIM_4+2) + (i+1)*(DIM_4+2) + (j+1));
+                output4_temp[filter*(DIM_4+2)*(DIM_4+2) + ((i/stride)+1)*(DIM_4+2) + ((j/stride)+1)] = conv;
             }
         }
     }
-
+    
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
         for(int i = 0; i < DIM_4; i = i + 1)
@@ -1069,7 +1076,7 @@ void init_weights_conv5(FILE* weights)
     }*/
 }
 
-void zero_padding_conv5()
+void zero_padding_conv5(float input[])
 {
     for(int count = 0; count < 256; count = count + 1)
     {    
@@ -1080,9 +1087,9 @@ void zero_padding_conv5()
             {
                 if(i < 1) 
                 {
-                    output4[i*(DIM_4+2) + j] = 0;
+                    input[i*(DIM_4+2) + j] = 0;
                 }
-                else output4[(i+DIM_4)*(DIM_4+2) + j] = 0;
+                else input[(i+DIM_4)*(DIM_4+2) + j] = 0;
             }
         }
 
@@ -1093,9 +1100,9 @@ void zero_padding_conv5()
             {
                 if(j < 1) 
                 {
-                    output4[i*(DIM_4 + 2)] = 0;
+                    input[i*(DIM_4 + 2)] = 0;
                 }
-                else output4[(i+1)*(DIM_4 + 2) - 1] = 0;
+                else input[(i+1)*(DIM_4 + 2) - 1] = 0;
             }
         }
     }
@@ -1114,7 +1121,7 @@ void conv5_shortcut()
             {
                 for (int depth = 0; depth < N_FILTERS_256; depth++)
                 {
-                    window[depth] = output2[i*(DIM_4+2) + j + depth*(DIM_4+2)*(DIM_4+2)];
+                    window[depth] = output4[i*(DIM_4+2) + j + depth*(DIM_4+2)*(DIM_4+2)];
                 }
 
                 conv = 0.0f;
@@ -1189,7 +1196,7 @@ void conv5_layer(float input[], bool first_conv)
                     }
                 }
                 
-                output5_temp[filter*(DIM_5+2)*(DIM_5+2) + (i+1)*(DIM_5+2) + (j+1)] = conv;
+                output5_temp[filter*(DIM_5+2)*(DIM_5+2) + ((i/stride)+1)*(DIM_5+2) + ((j/stride)+1)] = conv;
             }
         }
     }
@@ -1254,7 +1261,7 @@ void average_layer()
         {
             for(int j = 0; j < 7; j++)
             {
-                nums[(i+1)*DIM_5 + (j+1)] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
+                nums[i*DIM_5 + j] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
             }
         }
 
@@ -1269,58 +1276,117 @@ void average_layer()
     }
 }
 
+void init_weights_fully(FILE* weights)
+{
+    char number[50];
+    int c, count = 0, weight_count = 0, line_count = 0;
+    float x;
+
+    memset(number, 0, sizeof number);
+
+    do {
+        c = fgetc(weights);
+
+        if(feof(weights) || line_count == 21) break;
+        else if(c == '\n')
+        {
+            line_count++;
+            weight_count = 0;
+        }
+        else if(c == '*')
+        {
+            x = atof(number);
+
+            if(weight_count < N_FILTERS_512)
+            {
+                if(line_count == 20) weights_fully[weight_count] = x;
+
+                weight_count++;
+            }
+
+            memset(number, 0, sizeof number);
+            count = 0;
+        }
+        else
+        {
+            number[count] = c;
+            count++;
+        }
+    } while(1);
+}
+
+float fully_connected_layer()
+{
+    int count;
+    float result = 0;
+
+    for(count = 0; count < N_FILTERS_512; count++)
+    {
+        //printf("%f\n", weights_fully[count]);
+        //result = result + output_average[count]*weights_fully[count];
+        result = result + output_average[count]*1;
+    }
+
+    return result;
+}
+
 int main(int argc, const char * argv[])
 {
     FILE *picture, *weights;
     float dense = 0.0f;
+    float result;
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
     weights = fopen("weights.txt", "r");
 
     init_weights_conv1(weights);
     init_weights_conv2(weights);
-    //init_weights_conv3();
-    //init_weights_conv4();
-    //init_weights_conv5();
+    init_weights_conv3(weights);
+    init_weights_conv4(weights);
+    init_weights_conv5(weights);
+    init_weights_fully(weights);
 
     zero_padding_conv1(picture);
     conv1_layer();
+
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
     conv2_layer(pooling_conv2, 1);
     zero_padding_conv3();
-    //conv2_layer(output2, 0);
+    conv2_layer(output2, 0);
     
-    //zero_padding_conv4(shortcut3);
-    //conv3_shortcut();
-    //zero_padding_conv3();
-    //conv3_layer(output2, 1);
-    //zero_padding_conv4(output3);
-    //conv3_layer(output3, 0);
-
-    //zero_padding_conv4(output3);
-    //conv4_layer();
-    //zero_padding_conv5();
-    //conv5_layer();
-
-    for(int id = 0; id < (DIM_2+2)*(DIM_2+2)*N_FILTERS_64; id++)
+    zero_padding_conv4(shortcut3);
+    conv3_shortcut();
+    zero_padding_conv3();
+    conv3_layer(output2, 1);
+    zero_padding_conv4(output3);
+    conv3_layer(output3, 0);
+    
+    for (int i = 0; i < 215296; i++)
     {
-        dense = dense + output2[id];
-        //printf("%f ", output2[id]);
+        dense = dense + output2[i];
     }
-
+    
     printf("%f\n", dense);
 
-    /*
-    for(int i = 0; i < DIM_2 + 2; i++)
-    {
-        for(int j = 0; j < DIM_2 + 2; j++)
-        {
-            printf("%f ", output2[(i*(DIM_2 + 2) + j)]);
-        }
-        printf("\n");
-    }
-    */
+    zero_padding_conv5(shortcut4);
+    conv4_shortcut();
+    zero_padding_conv4(output3);
+    conv4_layer(output3, 1);
+    zero_padding_conv5(output4);
+    conv4_layer(output4, 0);
+
+    //zero_padding_sc5();
+    conv5_shortcut();
+    zero_padding_conv5(output4);
+    conv5_layer(output4, 1);
+    //zero_padding_sc5();
+    conv5_layer(output5, 0);
+
+    average_layer();
+    result = fully_connected_layer();
+    printf("%f\n", result);
+
     return 0;
 }
