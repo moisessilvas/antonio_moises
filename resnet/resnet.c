@@ -1024,9 +1024,19 @@ void conv4_layer(float input[], bool first_conv)
         }
     }
 
-    for(int n = 0; n < (DIM_4+2)*(DIM_4+2)*N_FILTERS_256; n++)
+    if(first_conv)
     {
-        output4[n] = input[n] + output4_temp2[n];
+        for(int n = 0; n < (DIM_4+2)*(DIM_4+2)*N_FILTERS_256; n++)
+        {
+            output4[n] = shortcut4[n] + output4_temp2[n];
+        }
+    }
+    else
+    {
+        for(int n = 0; n < (DIM_4+2)*(DIM_4+2)*N_FILTERS_256; n++)
+        {
+            output4[n] = input[n] + output4_temp2[n];
+        }
     }
 }
 
@@ -1259,9 +1269,19 @@ void conv5_layer(float input[], bool first_conv)
         }
     }
 
-    for(int n = 0; n < (DIM_5+2)*(DIM_5+2)*N_FILTERS_512; n++)
+    if(first_conv)
     {
-        output5[n] = input[n] + output5_temp2[n];
+        for(int n = 0; n < (DIM_5+2)*(DIM_5+2)*N_FILTERS_512; n++)
+        {
+            output5[n] = shortcut5[n] + output5_temp2[n];
+        }
+    }
+    else
+    {
+        for(int n = 0; n < (DIM_5+2)*(DIM_5+2)*N_FILTERS_512; n++)
+        {
+            output5[n] = input[n] + output5_temp2[n];
+        }
     }
 }
 
