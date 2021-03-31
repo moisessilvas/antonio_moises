@@ -899,7 +899,8 @@ void conv4_shortcut()
 
                 for(int k = 0; k < N_FILTERS_128; k++)
                 {
-                    conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
+                    //conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
+                    conv = conv + window[k];
                 }
 
                 shortcut4[filter*(DIM_4+2)*(DIM_4+2) + (i/2 + 1)*(DIM_4+2) + (j/2 + 1)] = conv;
@@ -958,14 +959,16 @@ void conv4_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv4_layer1a[k + 3*3*N_FILTERS_128*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv4_layer1a[k + 3*3*N_FILTERS_128*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv4_layer1b[k + 3*3*N_FILTERS_256*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv4_layer1b[k + 3*3*N_FILTERS_256*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 
@@ -1003,14 +1006,16 @@ void conv4_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_256*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_256*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_256*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_256*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 
@@ -1133,7 +1138,8 @@ void conv5_shortcut()
 
                 for(int k = 0; k < N_FILTERS_256; k++)
                 {
-                    conv = conv + (window[k] * weights_conv5_shortcut[k + filter*N_FILTERS_64]);
+                    //conv = conv + (window[k] * weights_conv5_shortcut[k + filter*N_FILTERS_64]);
+                    conv = conv + window[k];
                 }
 
                 shortcut5[filter*(DIM_5+2)*(DIM_5+2) + (i/2 + 1)*(DIM_5+2) + (j/2 + 1)] = conv;
@@ -1190,14 +1196,16 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv5_layer1a[k*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv5_layer1a[k*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv5_layer1b[k*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv5_layer1b[k*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 
@@ -1233,14 +1241,16 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv4_layer2a[k*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv4_layer2a[k*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv4_layer2b[k*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv4_layer2b[k*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 
