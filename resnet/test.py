@@ -41,7 +41,7 @@ x3 = layers.Conv2D(64, (3, 3), kernel_initializer='ones', padding='valid', use_b
 added = layers.add([added,x3])
 
 # Layer 3
-'''
+
 sc = layers.Conv2D(128, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut3')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
 x = layers.Conv2D(128, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv3_1a')(x)
@@ -56,7 +56,7 @@ added = layers.add([added,x3])
 x = layers.ZeroPadding2D((1,1))(added)
 
 # Layer 4
-
+'''
 sc = layers.Conv2D(256, (1, 1), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='shortcut4')(added)
 x = layers.ZeroPadding2D((1, 1))(added)
 x = layers.Conv2D(256, (3, 3), (2, 2), kernel_initializer='ones', padding='valid', use_bias=False, name='conv4_1a')(x)

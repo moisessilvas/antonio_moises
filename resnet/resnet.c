@@ -651,7 +651,8 @@ void conv3_shortcut()
 
                 for(int k = 0; k < N_FILTERS_64; k++)
                 {
-                    conv = conv + (window[k] * weights_conv3_shortcut[k + filter*N_FILTERS_64]);
+                    //conv = conv + (window[k] * weights_conv3_shortcut[k + filter*N_FILTERS_64]);
+                    conv = conv + window[k];
                 }
 
                 shortcut3[filter*(DIM_3+2)*(DIM_3+2) + (i/2 + 1)*(DIM_3+2) + (j/2 + 1)] = conv;
@@ -709,14 +710,16 @@ void conv3_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*N_FILTERS_64*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*N_FILTERS_64*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        conv = conv + (window_layer1[k] * weights_conv3_layer1b[k + 3*3*N_FILTERS_128*filter]);
+                        //conv = conv + (window_layer1[k] * weights_conv3_layer1b[k + 3*3*N_FILTERS_128*filter]);
+                        conv = conv + window_layer1[k];
                     }
                 }
                 //if((filter*(DIM_3+2)*(DIM_3+2) + (i+1)*(DIM_3+2) + (j+1)) > ((DIM_3+2)*(DIM_3+2)*N_FILTERS_128)) printf("Achei!\n");
@@ -732,7 +735,7 @@ void conv3_layer(float input[], bool first_conv)
         {
             for(int j = 0; j < DIM_3; j = j + 1)
             {
-                for (int depth = 0; depth < N_FILTERS_64; depth++)
+                for (int depth = 0; depth < N_FILTERS_128; depth++)
                 {
                     window_layer2[0 + depth*9] = output3_temp[(i+0)*(DIM_3+2) + j+0 + depth*(DIM_3+2)*(DIM_3+2)];
                     window_layer2[1 + depth*9] = output3_temp[(i+0)*(DIM_3+2) + j+1 + depth*(DIM_3+2)*(DIM_3+2)];
@@ -753,14 +756,16 @@ void conv3_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_128*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_128*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_128*filter]);
+                        //conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_128*filter]);
+                        conv = conv + window_layer2[k];
                     }
                 }
                 
@@ -768,7 +773,7 @@ void conv3_layer(float input[], bool first_conv)
             }
         }
     }
-
+    
     if(first_conv)
     {
         for(int n = 0; n < (DIM_3+2)*(DIM_3+2)*N_FILTERS_128; n++)
@@ -1332,6 +1337,7 @@ float fully_connected_layer()
 
 int main(int argc, const char * argv[])
 {
+    
     FILE *picture, *weights;
     float dense = 0.0f;
     float result;
@@ -1345,10 +1351,10 @@ int main(int argc, const char * argv[])
     init_weights_conv4(weights);
     init_weights_conv5(weights);
     init_weights_fully(weights);
-
+    
     zero_padding_conv1(picture);
     conv1_layer();
-
+    
     zero_padding_pool_conv2();
     max_pooling_conv2();
     zero_padding_conv2();
@@ -1363,13 +1369,13 @@ int main(int argc, const char * argv[])
     zero_padding_conv4(output3);
     conv3_layer(output3, 0);
     
-    for (int i = 0; i < 215296; i++)
+    for (int i = 0; i < 115200; i++)
     {
-        dense = dense + output2[i];
+        dense = dense + output3[i];
     }
     
-    printf("%f\n", dense);
-
+    printf("\n%f\n", dense);
+    /*
     zero_padding_conv5(shortcut4);
     conv4_shortcut();
     zero_padding_conv4(output3);
@@ -1387,6 +1393,6 @@ int main(int argc, const char * argv[])
     average_layer();
     result = fully_connected_layer();
     printf("%f\n", result);
-
+    */
     return 0;
 }
