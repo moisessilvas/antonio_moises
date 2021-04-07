@@ -81,35 +81,22 @@ void relu(float data[])
 
 void init_weights_conv1(FILE* weights)
 {   
-    char number[50];
-    int c, count = 0, weight_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_64*7*7*10];
+    fgets(buffer, N_FILTERS_64*7*7*10, weights);
+    
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv1[counter] = w;
 
-    memset(number, 0, sizeof number);
-
-    do {
-        c = fgetc(weights);
-
-        if(feof(weights) || c == '\n') break;
-        else if(c == '*')
-        {
-            x = atof(number);
-
-            if(weight_count < N_FILTERS_64*7*7)
-            {
-                weights_conv1[weight_count] = x;
-                weight_count++;
-            }
-
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
+    
     /*
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
     {
@@ -265,44 +252,60 @@ void conv1_layer()
 
 void init_weights_conv2(FILE* weights)
 {
-    char number[50];
-    int c, count = 0, weight_count = 0, line_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_64*3*3*N_FILTERS_64*10];
 
-    memset(number, 0, sizeof number);
+    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv2_layer1a[counter] = w;
 
-    do {
-        c = fgetc(weights);
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-        if(feof(weights) || line_count == 5) break;
-        else if(c == '\n')
-        {
-            line_count++;
-            weight_count = 0;
-        }
-        else if(c == '*')
-        {
-            x = atof(number);
+    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv2_layer2a[counter] = w;
 
-            if(weight_count < N_FILTERS_64*3*3*N_FILTERS_64)
-            {
-                if(line_count == 1) weights_conv2_layer1a[weight_count] = x;
-                else if(line_count == 2) weights_conv2_layer2a[weight_count] = x;
-                else if(line_count == 3) weights_conv2_layer1b[weight_count] = x;
-                else if(line_count == 4) weights_conv2_layer2b[weight_count] = x;
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-                weight_count++;
-            }
+    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv2_layer1b[counter] = w;
 
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv2_layer2b[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
     /*
     for(int i = 0; i < N_FILTERS_64*3*3*N_FILTERS_64; i++)
     {
@@ -521,45 +524,73 @@ void conv2_layer(float input[], bool first_conv)
 
 void init_weights_conv3(FILE* weights)
 {
-    char number[50];
-    int c, count = 0, weight_count = 0, line_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_128*3*3*N_FILTERS_128*10];
 
-    memset(number, 0, sizeof number);
+    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_64*10, weights);
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv3_layer1a[counter] = w;
 
-    do {
-        c = fgetc(weights);
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-        if(feof(weights) || line_count == 10) break;
-        else if(c == '\n')
-        {
-            line_count++;
-            weight_count = 0;
-        }
-        else if(c == '*')
-        {
-            x = atof(number);
+    fgets(buffer, N_FILTERS_128*N_FILTERS_64*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv3_shortcut[counter] = w;
 
-            if(weight_count < N_FILTERS_128*3*3*N_FILTERS_128)
-            {
-                if(line_count == 5) weights_conv3_layer1a[weight_count] = x;
-                else if(line_count == 6) weights_conv3_shortcut[weight_count] = x;
-                else if(line_count == 7) weights_conv3_layer2a[weight_count] = x;
-                else if(line_count == 8) weights_conv3_layer1b[weight_count] = x;
-                else if(line_count == 9) weights_conv3_layer2b[weight_count] = x;
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-                weight_count++;
-            }
+    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv3_layer1b[counter] = w;
 
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv3_layer2a[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv3_layer2b[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
     /*
     for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_64; i++)
     {
@@ -651,8 +682,7 @@ void conv3_shortcut()
 
                 for(int k = 0; k < N_FILTERS_64; k++)
                 {
-                    //conv = conv + (window[k] * weights_conv3_shortcut[k + filter*N_FILTERS_64]);
-                    conv = conv + window[k];
+                    conv = conv + (window[k] * weights_conv3_shortcut[k + filter*N_FILTERS_64]);
                 }
 
                 shortcut3[filter*(DIM_3+2)*(DIM_3+2) + (i/2 + 1)*(DIM_3+2) + (j/2 + 1)] = conv;
@@ -679,9 +709,6 @@ void conv3_layer(float input[], bool first_conv)
     float conv;
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_128];
-    
-    //float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-    //float output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
     
     for(filter = 0; filter < N_FILTERS_128; filter++)
     {
@@ -710,20 +737,17 @@ void conv3_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_64; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*N_FILTERS_64*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv3_layer1a[k + 3*3*N_FILTERS_64*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv3_layer1b[k + 3*3*N_FILTERS_128*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv3_layer1b[k + 3*3*N_FILTERS_128*filter]);
                     }
                 }
-                //if((filter*(DIM_3+2)*(DIM_3+2) + (i+1)*(DIM_3+2) + (j+1)) > ((DIM_3+2)*(DIM_3+2)*N_FILTERS_128)) printf("Achei!\n");
-                //printf("%i\n", filter*(DIM_3+2)*(DIM_3+2) + ((i/stride)+1)*(DIM_3+2) + ((j/stride)+1));
+
                 output3_temp[filter*(DIM_3+2)*(DIM_3+2) + ((i/stride)+1)*(DIM_3+2) + ((j/stride)+1)] = conv;
             }
         }
@@ -756,16 +780,14 @@ void conv3_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_128*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_128*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_128*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_128*filter]);
                     }
                 }
                 
@@ -793,45 +815,73 @@ void conv3_layer(float input[], bool first_conv)
 
 void init_weights_conv4(FILE* weights)
 {
-    char number[50];
-    int c, count = 0, weight_count = 0, line_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_256*3*3*N_FILTERS_256*10];
 
-    memset(number, 0, sizeof number);
+    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_128*10, weights);
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv4_layer1a[counter] = w;
 
-    do {
-        c = fgetc(weights);
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-        if(feof(weights) || line_count == 15) break;
-        else if(c == '\n')
-        {
-            line_count++;
-            weight_count = 0;
-        }
-        else if(c == '*')
-        {
-            x = atof(number);
+    fgets(buffer, N_FILTERS_256*N_FILTERS_128*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv4_shortcut[counter] = w;
 
-            if(weight_count < N_FILTERS_256*3*3*N_FILTERS_256)
-            {
-                if(line_count == 10) weights_conv4_layer1a[weight_count] = x;
-                else if(line_count == 11) weights_conv4_shortcut[weight_count] = x;
-                else if(line_count == 12) weights_conv4_layer2a[weight_count] = x;
-                else if(line_count == 13) weights_conv4_layer1b[weight_count] = x;
-                else if(line_count == 14) weights_conv4_layer2b[weight_count] = x;
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-                weight_count++;
-            }
+    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv4_layer1b[counter] = w;
 
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv4_layer2a[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv4_layer2b[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
     /*
     for(int i = 0; i < N_FILTERS_256*3*3*N_FILTERS_128; i++)
     {
@@ -899,8 +949,7 @@ void conv4_shortcut()
 
                 for(int k = 0; k < N_FILTERS_128; k++)
                 {
-                    //conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
-                    conv = conv + window[k];
+                    conv = conv + (window[k] * weights_conv4_shortcut[k + filter*N_FILTERS_128]);
                 }
 
                 shortcut4[filter*(DIM_4+2)*(DIM_4+2) + (i/2 + 1)*(DIM_4+2) + (j/2 + 1)] = conv;
@@ -929,9 +978,6 @@ void conv4_layer(float input[], bool first_conv)
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_256];
     
-    //float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-    //float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-    
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
         for(int i = 0; i < dim; i = i + stride)
@@ -959,21 +1005,17 @@ void conv4_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_128; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv4_layer1a[k + 3*3*N_FILTERS_128*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv4_layer1a[k + 3*3*N_FILTERS_128*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv4_layer1b[k + 3*3*N_FILTERS_256*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv4_layer1b[k + 3*3*N_FILTERS_256*filter]);
                     }
                 }
                 
-                //if(filter*(DIM_4+2)*(DIM_4+2) + (i+1)*(DIM_4+2) + (j+1) > (DIM_4+2)*(DIM_4+2)*N_FILTERS_256) printf("Achei!\n");
-                //printf("%i\n", filter*(DIM_4+2)*(DIM_4+2) + (i+1)*(DIM_4+2) + (j+1));
                 output4_temp[filter*(DIM_4+2)*(DIM_4+2) + ((i/stride)+1)*(DIM_4+2) + ((j/stride)+1)] = conv;
             }
         }
@@ -1006,16 +1048,14 @@ void conv4_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_256*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv3_layer2a[k + 3*3*N_FILTERS_256*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_256*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv3_layer2b[k + 3*3*N_FILTERS_256*filter]);
                     }
                 }
                 
@@ -1042,45 +1082,73 @@ void conv4_layer(float input[], bool first_conv)
 
 void init_weights_conv5(FILE* weights)
 {
-    char number[50];
-    int c, count = 0, weight_count = 0, line_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_512*3*3*N_FILTERS_512*10];
 
-    memset(number, 0, sizeof number);
+    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_256*10, weights);
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv5_layer1a[counter] = w;
 
-    do {
-        c = fgetc(weights);
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-        if(feof(weights) || line_count == 20) break;
-        else if(c == '\n')
-        {
-            line_count++;
-            weight_count = 0;
-        }
-        else if(c == '*')
-        {
-            x = atof(number);
+    fgets(buffer, N_FILTERS_512*N_FILTERS_256*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv5_shortcut[counter] = w;
 
-            if(weight_count < N_FILTERS_128*3*3*N_FILTERS_128)
-            {
-                if(line_count == 15) weights_conv5_layer1a[weight_count] = x;
-                else if(line_count == 16) weights_conv5_shortcut[weight_count] = x;
-                else if(line_count == 17) weights_conv5_layer2a[weight_count] = x;
-                else if(line_count == 18) weights_conv5_layer1b[weight_count] = x;
-                else if(line_count == 19) weights_conv5_layer2b[weight_count] = x;
+        counter++;
+        token = strtok(NULL, "*");
+    }
 
-                weight_count++;
-            }
+    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv5_layer1b[counter] = w;
 
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer,N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv5_layer2a[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
+
+    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    token = strtok(buffer, "*");
+    counter = 0;
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_conv5_layer2b[counter] = w;
+
+        counter++;
+        token = strtok(NULL, "*");
+    }
     /*
     for(int i = 0; i < N_FILTERS_512*3*3*N_FILTERS_256; i++)
     {
@@ -1176,9 +1244,6 @@ void conv5_layer(float input[], bool first_conv)
     float window_layer1[3*3*filter_size];
     float window_layer2[3*3*N_FILTERS_512];
     
-    //float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-    //float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-    
     for(filter = 0; filter < N_FILTERS_512; filter++)
     {
         for(int i = 0; i < dim; i = i + stride)
@@ -1206,16 +1271,14 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_256; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv5_layer1a[k*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv5_layer1a[k + 3*3*N_FILTERS_256*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        //conv = conv + (window_layer1[k] * weights_conv5_layer1b[k*filter]);
-                        conv = conv + window_layer1[k];
+                        conv = conv + (window_layer1[k] * weights_conv5_layer1b[k + 3*3*N_FILTERS_512*filter]);
                     }
                 }
                 
@@ -1251,16 +1314,14 @@ void conv5_layer(float input[], bool first_conv)
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv4_layer2a[k*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv4_layer2a[k + 3*3*N_FILTERS_512*filter]);
                     }
                 }
                 else
                 {
                     for(int k = 0; k < 3*3*N_FILTERS_512; k++)
                     {
-                        //conv = conv + (window_layer2[k] * weights_conv4_layer2b[k*filter]);
-                        conv = conv + window_layer2[k];
+                        conv = conv + (window_layer2[k] * weights_conv4_layer2b[k + 3*3*N_FILTERS_512*filter]);
                     }
                 }
                 
@@ -1313,41 +1374,21 @@ void average_layer()
 
 void init_weights_fully(FILE* weights)
 {
-    char number[50];
-    int c, count = 0, weight_count = 0, line_count = 0;
-    float x;
+    int counter = 0;
+    float w;
+    char buffer[N_FILTERS_512*10];
+    fgets(buffer, N_FILTERS_512*10, weights);
+    
+    char* token = strtok(buffer, "*");
+    
+    while(token != NULL)
+    {
+        w = atof(token);
+        weights_fully[counter] = w;
 
-    memset(number, 0, sizeof number);
-
-    do {
-        c = fgetc(weights);
-
-        if(feof(weights) || line_count == 21) break;
-        else if(c == '\n')
-        {
-            line_count++;
-            weight_count = 0;
-        }
-        else if(c == '*')
-        {
-            x = atof(number);
-
-            if(weight_count < N_FILTERS_512)
-            {
-                if(line_count == 20) weights_fully[weight_count] = x;
-
-                weight_count++;
-            }
-
-            memset(number, 0, sizeof number);
-            count = 0;
-        }
-        else
-        {
-            number[count] = c;
-            count++;
-        }
-    } while(1);
+        counter++;
+        token = strtok(NULL, "*");
+    }
 }
 
 float fully_connected_layer()
@@ -1357,9 +1398,7 @@ float fully_connected_layer()
 
     for(count = 0; count < N_FILTERS_512; count++)
     {
-        //printf("%f\n", weights_fully[count]);
-        //result = result + output_average[count]*weights_fully[count];
-        result = result + output_average[count]*1;
+        result = result + output_average[count]*weights_fully[count];
     }
 
     return result;
@@ -1399,20 +1438,13 @@ int main(int argc, const char * argv[])
     zero_padding_conv4(output3);
     conv3_layer(output3, 0);
     
-    for (int i = 0; i < 115200; i++)
-    {
-        dense = dense + output3[i];
-    }
-    
-    printf("\n%f\n", dense);
-    /*
     zero_padding_conv5(shortcut4);
     conv4_shortcut();
     zero_padding_conv4(output3);
     conv4_layer(output3, 1);
     zero_padding_conv5(output4);
-    conv4_layer(output4, 0);
-
+    //conv4_layer(output4, 0);
+    /*
     //zero_padding_sc5();
     conv5_shortcut();
     zero_padding_conv5(output4);
@@ -1424,5 +1456,13 @@ int main(int argc, const char * argv[])
     result = fully_connected_layer();
     printf("%f\n", result);
     */
+
+   for (int i = 0; i < 65536; i++)
+    {
+        dense = dense + output4[i];
+    }
+    
+    printf("\n%f\n", dense);
+
     return 0;
 }
