@@ -17,56 +17,56 @@
 #define DIM_5 7
 
 static int image[(DIM_0+6)*(DIM_0+6)];
-static float output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
-static float output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-static float output3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-static float shortcut3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-static float output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-static float shortcut4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-static float output5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-static float shortcut5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+static double output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
+static double output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+static double output3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+static double shortcut3[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+static double output4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+static double shortcut4[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+static double output5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+static double shortcut5[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
 
-float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-float output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-float output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
-float output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-float output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
-float output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-float output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
-float output_average[N_FILTERS_512];
+double output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+double output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+double output3_temp[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+double output3_temp2[(DIM_3+2)*(DIM_3+2)*N_FILTERS_128];
+double output4_temp[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+double output4_temp2[(DIM_4+2)*(DIM_4+2)*N_FILTERS_256];
+double output5_temp[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+double output5_temp2[(DIM_5+2)*(DIM_5+2)*N_FILTERS_512];
+double output_average[N_FILTERS_512];
 
-static float weights_conv1[N_FILTERS_64*7*7];
+static double weights_conv1[N_FILTERS_64*7*7];
 
-static float weights_conv2_layer1a[N_FILTERS_64*3*3*N_FILTERS_64];
-static float weights_conv2_layer2a[N_FILTERS_64*3*3*N_FILTERS_64];
-static float weights_conv2_layer1b[N_FILTERS_64*3*3*N_FILTERS_64];
-static float weights_conv2_layer2b[N_FILTERS_64*3*3*N_FILTERS_64];
+static double weights_conv2_layer1a[N_FILTERS_64*3*3*N_FILTERS_64];
+static double weights_conv2_layer2a[N_FILTERS_64*3*3*N_FILTERS_64];
+static double weights_conv2_layer1b[N_FILTERS_64*3*3*N_FILTERS_64];
+static double weights_conv2_layer2b[N_FILTERS_64*3*3*N_FILTERS_64];
 
-static float weights_conv3_layer1a[N_FILTERS_128*3*3*N_FILTERS_64];
-static float weights_conv3_layer2a[N_FILTERS_128*3*3*N_FILTERS_128];
-static float weights_conv3_layer1b[N_FILTERS_128*3*3*N_FILTERS_128];
-static float weights_conv3_layer2b[N_FILTERS_128*3*3*N_FILTERS_128];
-static float weights_conv3_shortcut[N_FILTERS_128*N_FILTERS_64];
+static double weights_conv3_layer1a[N_FILTERS_128*3*3*N_FILTERS_64];
+static double weights_conv3_layer2a[N_FILTERS_128*3*3*N_FILTERS_128];
+static double weights_conv3_layer1b[N_FILTERS_128*3*3*N_FILTERS_128];
+static double weights_conv3_layer2b[N_FILTERS_128*3*3*N_FILTERS_128];
+static double weights_conv3_shortcut[N_FILTERS_128*N_FILTERS_64];
 
-static float weights_conv4_layer1a[N_FILTERS_256*3*3*N_FILTERS_128];
-static float weights_conv4_layer1b[N_FILTERS_256*3*3*N_FILTERS_256];
-static float weights_conv4_layer2a[N_FILTERS_256*3*3*N_FILTERS_256];
-static float weights_conv4_layer2b[N_FILTERS_256*3*3*N_FILTERS_256];
-static float weights_conv4_shortcut[N_FILTERS_256*N_FILTERS_128];
+static double weights_conv4_layer1a[N_FILTERS_256*3*3*N_FILTERS_128];
+static double weights_conv4_layer1b[N_FILTERS_256*3*3*N_FILTERS_256];
+static double weights_conv4_layer2a[N_FILTERS_256*3*3*N_FILTERS_256];
+static double weights_conv4_layer2b[N_FILTERS_256*3*3*N_FILTERS_256];
+static double weights_conv4_shortcut[N_FILTERS_256*N_FILTERS_128];
 
-static float weights_conv5_layer1a[N_FILTERS_512*3*3*N_FILTERS_256];
-static float weights_conv5_layer1b[N_FILTERS_512*3*3*N_FILTERS_512];
-static float weights_conv5_layer2a[N_FILTERS_512*3*3*N_FILTERS_512];
-static float weights_conv5_layer2b[N_FILTERS_512*3*3*N_FILTERS_512];
-static float weights_conv5_shortcut[N_FILTERS_512*N_FILTERS_256];
+static double weights_conv5_layer1a[N_FILTERS_512*3*3*N_FILTERS_256];
+static double weights_conv5_layer1b[N_FILTERS_512*3*3*N_FILTERS_512];
+static double weights_conv5_layer2a[N_FILTERS_512*3*3*N_FILTERS_512];
+static double weights_conv5_layer2b[N_FILTERS_512*3*3*N_FILTERS_512];
+static double weights_conv5_shortcut[N_FILTERS_512*N_FILTERS_256];
 
-static float weights_fully[N_FILTERS_512];
+static double weights_fully[N_FILTERS_512];
 
-static float pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+static double pooling_conv2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
 
 /*
-void relu(float data[])
+void relu(double data[])
 {
     int data_size = sizeof(data)/sizeof(data[0]);
 
@@ -82,8 +82,10 @@ void relu(float data[])
 void init_weights_conv1(FILE* weights)
 {   
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_64*7*7*10];
+    double w;
+    //char buffer[N_FILTERS_64*7*7*10];
+    char *buffer = (char *)malloc(N_FILTERS_64*7*7*10*sizeof(char));
+
     fgets(buffer, N_FILTERS_64*7*7*10, weights);
     
     char* token = strtok(buffer, "*");
@@ -165,7 +167,7 @@ void zero_padding_conv1(FILE* picture)
 void conv1_layer()
 {
     int filter, id = 0;
-    float conv;
+    double conv;
     unsigned char window[7*7];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
@@ -253,8 +255,9 @@ void conv1_layer()
 void init_weights_conv2(FILE* weights)
 {
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_64*3*3*N_FILTERS_64*10];
+    double w;
+    //char buffer[N_FILTERS_64*3*3*N_FILTERS_64*10];
+    char *buffer = (char *)malloc(N_FILTERS_64*3*3*N_FILTERS_64*10*sizeof(char));
 
     fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
     char* token = strtok(buffer, "*");
@@ -351,8 +354,8 @@ void zero_padding_pool_conv2()
 
 void max_pooling_conv2()
 {
-    float window[3*3];
-    float max_pool;
+    double window[3*3];
+    double max_pool;
 
     for (int depth = 0; depth < N_FILTERS_64; depth++)
     {
@@ -420,15 +423,15 @@ void zero_padding_conv2()
     }
 }
 
-void conv2_layer(float input[], bool first_conv)
+void conv2_layer(double input[], bool first_conv)
 {
     int filter;
-    float conv;
-    float window_layer1[3*3*N_FILTERS_64];
-    float window_layer2[3*3*N_FILTERS_64];
+    double conv;
+    double window_layer1[3*3*N_FILTERS_64];
+    double window_layer2[3*3*N_FILTERS_64];
     
-    //float output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
-    //float output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+    //double output2_temp[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
+    //double output2_temp2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
     
     for(filter = 0; filter < N_FILTERS_64; filter++)
     {
@@ -525,8 +528,9 @@ void conv2_layer(float input[], bool first_conv)
 void init_weights_conv3(FILE* weights)
 {
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_128*3*3*N_FILTERS_128*10];
+    double w;
+    //char buffer[N_FILTERS_128*3*3*N_FILTERS_128*10];
+    char *buffer = (char *)malloc(N_FILTERS_128*3*3*N_FILTERS_128*10*sizeof(char));
 
     fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_64*10, weights);
     char* token = strtok(buffer, "*");
@@ -664,8 +668,8 @@ void zero_padding_conv3()
 
 void conv3_shortcut()
 {
-    float conv;
-    float window[N_FILTERS_64];
+    double conv;
+    double window[N_FILTERS_64];
 
     for(int filter = 0; filter < N_FILTERS_128; filter++)
     {
@@ -692,7 +696,7 @@ void conv3_shortcut()
     
 }
 
-void conv3_layer(float input[], bool first_conv)
+void conv3_layer(double input[], bool first_conv)
 {
     int dim = DIM_3; 
     int filter_size = N_FILTERS_128;
@@ -706,9 +710,9 @@ void conv3_layer(float input[], bool first_conv)
     } 
 
     int filter;
-    float conv;
-    float window_layer1[3*3*filter_size];
-    float window_layer2[3*3*N_FILTERS_128];
+    double conv;
+    double window_layer1[3*3*filter_size];
+    double window_layer2[3*3*N_FILTERS_128];
     
     for(filter = 0; filter < N_FILTERS_128; filter++)
     {
@@ -816,8 +820,9 @@ void conv3_layer(float input[], bool first_conv)
 void init_weights_conv4(FILE* weights)
 {
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_256*3*3*N_FILTERS_256*10];
+    double w;
+    //char buffer[N_FILTERS_256*3*3*N_FILTERS_256*10];
+    char *buffer = (char *)malloc(N_FILTERS_256*3*3*N_FILTERS_256*10*sizeof(char));
 
     fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_128*10, weights);
     char* token = strtok(buffer, "*");
@@ -897,7 +902,7 @@ void init_weights_conv4(FILE* weights)
     }*/
 }
 
-void zero_padding_conv4(float input[])
+void zero_padding_conv4(double input[])
 {
     for(int count = 0; count < 128; count = count + 1)
     {    
@@ -931,8 +936,8 @@ void zero_padding_conv4(float input[])
 
 void conv4_shortcut()
 {
-    float conv;
-    float window[N_FILTERS_128];
+    double conv;
+    double window[N_FILTERS_128];
 
     for(int filter = 0; filter < N_FILTERS_256; filter++)
     {
@@ -959,7 +964,7 @@ void conv4_shortcut()
 
 }
 
-void conv4_layer(float input[], bool first_conv)
+void conv4_layer(double input[], bool first_conv)
 {
     int dim = DIM_4; 
     int filter_size = N_FILTERS_256;
@@ -974,9 +979,9 @@ void conv4_layer(float input[], bool first_conv)
     } 
     
     int filter;
-    float conv;
-    float window_layer1[3*3*filter_size];
-    float window_layer2[3*3*N_FILTERS_256];
+    double conv;
+    double window_layer1[3*3*filter_size];
+    double window_layer2[3*3*N_FILTERS_256];
     
     for(filter = 0; filter < N_FILTERS_256; filter++)
     {
@@ -1083,8 +1088,9 @@ void conv4_layer(float input[], bool first_conv)
 void init_weights_conv5(FILE* weights)
 {
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_512*3*3*N_FILTERS_512*10];
+    double w;
+    //char buffer[N_FILTERS_512*3*3*N_FILTERS_512*10];
+    char *buffer = (char *)malloc(N_FILTERS_512*3*3*N_FILTERS_512*10*sizeof(char));
 
     fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_256*10, weights);
     char* token = strtok(buffer, "*");
@@ -1164,7 +1170,7 @@ void init_weights_conv5(FILE* weights)
     }*/
 }
 
-void zero_padding_conv5(float input[])
+void zero_padding_conv5(double input[])
 {
     for(int count = 0; count < 256; count = count + 1)
     {    
@@ -1198,8 +1204,8 @@ void zero_padding_conv5(float input[])
 
 void conv5_shortcut()
 {
-    float conv;
-    float window[N_FILTERS_256];
+    double conv;
+    double window[N_FILTERS_256];
 
     for(int filter = 0; filter < N_FILTERS_512; filter++)
     {
@@ -1226,7 +1232,7 @@ void conv5_shortcut()
     }
 }
 
-void conv5_layer(float input[], bool first_conv)
+void conv5_layer(double input[], bool first_conv)
 {
     int dim = DIM_5; 
     int filter_size = N_FILTERS_512;
@@ -1240,9 +1246,9 @@ void conv5_layer(float input[], bool first_conv)
     } 
     
     int filter;
-    float conv;
-    float window_layer1[3*3*filter_size];
-    float window_layer2[3*3*N_FILTERS_512];
+    double conv;
+    double window_layer1[3*3*filter_size];
+    double window_layer2[3*3*N_FILTERS_512];
     
     for(filter = 0; filter < N_FILTERS_512; filter++)
     {
@@ -1348,8 +1354,8 @@ void conv5_layer(float input[], bool first_conv)
 
 void average_layer()
 {
-    float nums[DIM_5*DIM_5];
-    float result;
+    double nums[DIM_5*DIM_5];
+    double result;
 
     for(int filter = 0; filter < N_FILTERS_512; filter++)
     {
@@ -1375,8 +1381,10 @@ void average_layer()
 void init_weights_fully(FILE* weights)
 {
     int counter = 0;
-    float w;
-    char buffer[N_FILTERS_512*10];
+    double w;
+    //char buffer[N_FILTERS_512*10];
+    char *buffer = (char *)malloc(N_FILTERS_512*10*sizeof(char));
+
     fgets(buffer, N_FILTERS_512*10, weights);
     
     char* token = strtok(buffer, "*");
@@ -1391,10 +1399,10 @@ void init_weights_fully(FILE* weights)
     }
 }
 
-float fully_connected_layer()
+double fully_connected_layer()
 {
     int count;
-    float result = 0;
+    double result = 0;
 
     for(count = 0; count < N_FILTERS_512; count++)
     {
@@ -1408,8 +1416,8 @@ int main(int argc, const char * argv[])
 {
     
     FILE *picture, *weights;
-    float dense = 0.0f;
-    float result;
+    double dense = 0.0f;
+    double result;
     
     picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
     weights = fopen("weights.txt", "r");
@@ -1443,8 +1451,8 @@ int main(int argc, const char * argv[])
     zero_padding_conv4(output3);
     conv4_layer(output3, 1);
     zero_padding_conv5(output4);
-    //conv4_layer(output4, 0);
-    /*
+    conv4_layer(output4, 0);
+    
     //zero_padding_sc5();
     conv5_shortcut();
     zero_padding_conv5(output4);
@@ -1455,14 +1463,13 @@ int main(int argc, const char * argv[])
     average_layer();
     result = fully_connected_layer();
     printf("%f\n", result);
-    */
-
-   for (int i = 0; i < 65536; i++)
+    /*
+    for (int i = 0; i < 65536; i++)
     {
         dense = dense + output4[i];
     }
     
     printf("\n%f\n", dense);
-
+    */
     return 0;
 }
