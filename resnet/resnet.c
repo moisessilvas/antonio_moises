@@ -16,6 +16,8 @@
 #define DIM_4 14
 #define DIM_5 7
 
+FILE *picture, *weights;
+
 static int image[(DIM_0+6)*(DIM_0+6)];
 static double output1[(DIM_1+2)*(DIM_1+2)*N_FILTERS_64];
 static double output2[(DIM_2+2)*(DIM_2+2)*N_FILTERS_64];
@@ -79,14 +81,18 @@ void relu(double data[])
     }
 }*/
 
-void init_weights_conv1(FILE* weights)
+void init_weights_conv1()
 {   
+    FILE *weights_1 = fopen("weights-conv1.txt", "r");
     int counter = 0;
     double w;
     //char buffer[N_FILTERS_64*7*7*10];
-    char *buffer = (char *)malloc(N_FILTERS_64*7*7*10*sizeof(char));
+    char *buffer = (char *)malloc(N_FILTERS_64*7*7*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_64*7*7*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_64*7*7*30, weights_1);
+    }while(atof(buffer) == 0);
     
     char* token = strtok(buffer, "*");
     
@@ -98,6 +104,7 @@ void init_weights_conv1(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("1: %f\n", weights_conv1[0]);
     
     /*
     for(int i = 0; i < N_FILTERS_64*7*7; i++)
@@ -108,7 +115,7 @@ void init_weights_conv1(FILE* weights)
     }*/
 }
 
-void zero_padding_conv1(FILE* picture)
+void zero_padding_conv1()
 {
     int c;
     int n = 0;
@@ -252,14 +259,19 @@ void conv1_layer()
 */
 }
 
-void init_weights_conv2(FILE* weights)
+void init_weights_conv2()
 {
+    FILE *weights_2 = fopen("weights-conv2.txt", "r");
     int counter = 0;
     double w;
     //char buffer[N_FILTERS_64*3*3*N_FILTERS_64*10];
-    char *buffer = (char *)malloc(N_FILTERS_64*3*3*N_FILTERS_64*10*sizeof(char));
+    char *buffer = (char *)malloc(N_FILTERS_64*3*3*N_FILTERS_64*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*30, weights_2);
+    }while(atof(buffer) == 0);
+    
     char* token = strtok(buffer, "*");
     
     while(token != NULL)
@@ -270,8 +282,12 @@ void init_weights_conv2(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("2: %f\n", weights_conv2_layer1a[0]);
 
-    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*30, weights_2);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -283,8 +299,12 @@ void init_weights_conv2(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("3: %f\n", weights_conv2_layer2a[0]);
 
-    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*30, weights_2);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -296,8 +316,12 @@ void init_weights_conv2(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("4: %f\n", weights_conv2_layer1b[0]);
 
-    fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_64*3*3*N_FILTERS_64*30, weights_2);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -309,6 +333,8 @@ void init_weights_conv2(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+
+    printf("5: %f\n", weights_conv2_layer2b[0]);
     /*
     for(int i = 0; i < N_FILTERS_64*3*3*N_FILTERS_64; i++)
     {
@@ -525,14 +551,18 @@ void conv2_layer(double input[], bool first_conv)
     }
 }
 
-void init_weights_conv3(FILE* weights)
+void init_weights_conv3()
 {
+    FILE *weights_3 = fopen("weights-conv3.txt", "r");
     int counter = 0;
     double w;
     //char buffer[N_FILTERS_128*3*3*N_FILTERS_128*10];
-    char *buffer = (char *)malloc(N_FILTERS_128*3*3*N_FILTERS_128*10*sizeof(char));
+    char *buffer = (char *)malloc(N_FILTERS_128*3*3*N_FILTERS_128*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_64*30, weights_3);
+    }while(atof(buffer) == 0);
     char* token = strtok(buffer, "*");
     
     while(token != NULL)
@@ -543,8 +573,12 @@ void init_weights_conv3(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("6: %f\n", weights_conv3_layer1a[0]);
 
-    fgets(buffer, N_FILTERS_128*N_FILTERS_64*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_128*N_FILTERS_64*30, weights_3);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -556,8 +590,12 @@ void init_weights_conv3(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("7: %f\n", weights_conv3_shortcut[0]);
 
-    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*30, weights_3);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -569,8 +607,12 @@ void init_weights_conv3(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("8: %f\n", weights_conv3_layer1b[0]);
 
-    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*30, weights_3);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -582,8 +624,12 @@ void init_weights_conv3(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("9: %f\n", weights_conv3_layer2a[0]);
 
-    fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_128*3*3*N_FILTERS_128*30, weights_3);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -595,6 +641,7 @@ void init_weights_conv3(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("10: %f\n", weights_conv3_layer2b[0]);
     /*
     for(int i = 0; i < N_FILTERS_128*3*3*N_FILTERS_64; i++)
     {
@@ -817,14 +864,18 @@ void conv3_layer(double input[], bool first_conv)
     
 }
 
-void init_weights_conv4(FILE* weights)
+void init_weights_conv4()
 {
+    FILE *weights_4 = fopen("weights-conv4.txt", "r");
     int counter = 0;
     double w;
     //char buffer[N_FILTERS_256*3*3*N_FILTERS_256*10];
-    char *buffer = (char *)malloc(N_FILTERS_256*3*3*N_FILTERS_256*10*sizeof(char));
+    char *buffer = (char *)malloc(N_FILTERS_256*3*3*N_FILTERS_256*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_128*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_128*30, weights_4);
+    }while(atof(buffer) == 0);
     char* token = strtok(buffer, "*");
     
     while(token != NULL)
@@ -835,8 +886,12 @@ void init_weights_conv4(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("11: %f\n", weights_conv4_layer1a[0]);
 
-    fgets(buffer, N_FILTERS_256*N_FILTERS_128*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_256*N_FILTERS_128*30, weights_4);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -848,8 +903,12 @@ void init_weights_conv4(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("12: %f\n", weights_conv4_shortcut[0]);
 
-    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*30, weights_4);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -861,8 +920,12 @@ void init_weights_conv4(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("13: %f\n", weights_conv4_layer1b[0]);
 
-    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*30, weights_4);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -874,8 +937,12 @@ void init_weights_conv4(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("14: %f\n", weights_conv4_layer2a[0]);
 
-    fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_256*3*3*N_FILTERS_256*30, weights_4);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -887,6 +954,7 @@ void init_weights_conv4(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("15: %f\n", weights_conv4_layer2b[0]);
     /*
     for(int i = 0; i < N_FILTERS_256*3*3*N_FILTERS_128; i++)
     {
@@ -1085,14 +1153,19 @@ void conv4_layer(double input[], bool first_conv)
     }
 }
 
-void init_weights_conv5(FILE* weights)
+void init_weights_conv5()
 {
+    FILE *weights_5 = fopen("weights-conv5.txt", "r");
     int counter = 0;
     double w;
     //char buffer[N_FILTERS_512*3*3*N_FILTERS_512*10];
-    char *buffer = (char *)malloc(N_FILTERS_512*3*3*N_FILTERS_512*10*sizeof(char));
+    char *buffer = (char *)malloc(N_FILTERS_512*3*3*N_FILTERS_512*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_256*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_256*30, weights_5);
+    }while(atof(buffer) == 0);
+
     char* token = strtok(buffer, "*");
     
     while(token != NULL)
@@ -1103,8 +1176,12 @@ void init_weights_conv5(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("16: %f\n", weights_conv5_layer1a[0]);
 
-    fgets(buffer, N_FILTERS_512*N_FILTERS_256*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_512*N_FILTERS_256*30, weights_5);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -1116,8 +1193,12 @@ void init_weights_conv5(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("17: %f\n", weights_conv5_shortcut[0]);
 
-    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*30, weights_5);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -1129,8 +1210,11 @@ void init_weights_conv5(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("18: %f\n", weights_conv5_layer1b[0]);
 
-    fgets(buffer,N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    do{
+        fgets(buffer,N_FILTERS_512*3*3*N_FILTERS_512*30, weights_5);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -1142,8 +1226,12 @@ void init_weights_conv5(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("19: %f\n", weights_conv5_layer2a[0]);
 
-    fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_512*3*3*N_FILTERS_512*30, weights_5);
+    }while(atof(buffer) == 0);
     token = strtok(buffer, "*");
     counter = 0;
     
@@ -1155,6 +1243,7 @@ void init_weights_conv5(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+    printf("20: %f\n", weights_conv5_layer2b[0]);
     /*
     for(int i = 0; i < N_FILTERS_512*3*3*N_FILTERS_256; i++)
     {
@@ -1359,9 +1448,9 @@ void average_layer()
 
     for(int filter = 0; filter < N_FILTERS_512; filter++)
     {
-        for(int i = 0; i < 7; i++)
+        for(int i = 0; i < DIM_5; i++)
         {
-            for(int j = 0; j < 7; j++)
+            for(int j = 0; j < DIM_5; j++)
             {
                 nums[i*DIM_5 + j] = output5[(i+1)*(DIM_5+2) + (j+1) + filter*(DIM_5+2)*(DIM_5+2)];
             }
@@ -1371,23 +1460,30 @@ void average_layer()
 
         for(int k = 0; k < DIM_5*DIM_5; k++)
         {
-            result = result + (nums[k]/DIM_5*DIM_5);
+            result = result + nums[k];
         }
 
-        output_average[filter] = result;
+        output_average[filter] = result/(DIM_5*DIM_5);
     }
 }
 
-void init_weights_fully(FILE* weights)
+void init_weights_fully()
 {
+    FILE *weights_f = fopen("weights-fully.txt", "r");
     int counter = 0;
+    int counter2 = 0;
     double w;
-    //char buffer[N_FILTERS_512*10];
-    char *buffer = (char *)malloc(N_FILTERS_512*10*sizeof(char));
+    //char buffer[N_FILTERS_512*19];
+    char *buffer = (char *)malloc(N_FILTERS_512*30*sizeof(char));
+    memset(buffer, 0, N_FILTERS_512*30*sizeof(char));
 
-    fgets(buffer, N_FILTERS_512*10, weights);
+    do
+    {
+        fgets(buffer, N_FILTERS_512*30, weights_f);
+    }while(atof(buffer) == 0);
     
     char* token = strtok(buffer, "*");
+    token = strtok(NULL, "*");
     
     while(token != NULL)
     {
@@ -1397,37 +1493,49 @@ void init_weights_fully(FILE* weights)
         counter++;
         token = strtok(NULL, "*");
     }
+
+    printf("21: %f\n", weights_fully[0]);
+    printf("Weights on fully: %i\n", counter);
 }
 
 double fully_connected_layer()
 {
     int count;
+    int one = 0, zero = 0;
     double result = 0;
 
     for(count = 0; count < N_FILTERS_512; count++)
     {
         result = result + output_average[count]*weights_fully[count];
+        //printf("%f\n", weights_fully[count]);
+
+        //if(weights_fully[count] == 1) one++;
+        //else zero++;
     }
+
+    //printf("Ones: %i\n", one);
+    //printf("Zeros: %i\n", zero);
+
+    result = 1/(1 + expf(-1*result));
 
     return result;
 }
 
 int main(int argc, const char * argv[])
 {
-    
-    FILE *picture, *weights;
     double dense = 0.0f;
     double result;
     
-    picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
-    weights = fopen("weights.txt", "r");
+    //picture = fopen("/home/antonio/Imagens/Grayscale.pnm", "rb");
+    picture = fopen("/home/antonio/Imagens/teste/10.pnm", "rb");
+    weights = fopen("weights-dataset.txt", "r");
 
-    init_weights_conv1(weights);
-    init_weights_conv2(weights);
-    init_weights_conv3(weights);
-    init_weights_conv4(weights);
-    init_weights_conv5(weights);
-    init_weights_fully(weights);
+    init_weights_conv1();
+    init_weights_conv2();
+    init_weights_conv3();
+    init_weights_conv4();
+    init_weights_conv5();
+    init_weights_fully();
     
     zero_padding_conv1(picture);
     conv1_layer();
@@ -1462,14 +1570,14 @@ int main(int argc, const char * argv[])
 
     average_layer();
     result = fully_connected_layer();
-    printf("%f\n", result);
+    printf("Rede com average: %f\n", result);
     /*
-    for (int i = 0; i < 65536; i++)
+    for (int i = 0; i < 41472; i++)
     {
-        dense = dense + output4[i];
+        dense = dense + output5[i];
     }
     
-    printf("\n%f\n", dense);
+    printf("\nRede sem average: %f\n", dense);
     */
     return 0;
 }
